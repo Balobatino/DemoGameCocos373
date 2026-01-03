@@ -50,10 +50,10 @@
         "height": 256,
         "rawWidth": 256,
         "rawHeight": 256,
-        "borderTop": 0,
-        "borderBottom": 0,
-        "borderLeft": 0,
-        "borderRight": 0,
+        "borderTop": 45,
+        "borderBottom": 70,
+        "borderLeft": 30,
+        "borderRight": 30,
         "packable": true,
         "pixelsToUnit": 100,
         "pivotX": 0.5,
@@ -129,6 +129,7 @@
     "type": "sprite-frame",
     "fixAlphaTransparencyArtifacts": true,
     "hasAlpha": true,
-    "redirect": "d327aa1a-36cd-45ca-95c1-2d4abe31df64@f9941"
+    "redirect": "d327aa1a-36cd-45ca-95c1-2d4abe31df64@f9941",
+    "flipVertical": false
   }
 }
