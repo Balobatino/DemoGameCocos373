@@ -1,0 +1,35 @@
+{
+  "__version__": "1.0.4",
+  "general": {
+    "designResolution": {
+      "width": 720,
+      "height": 1280
+    }
+  },
+  "sorting-layer": {
+    "layers": [
+      {
+        "id": 0,
+        "name": "default",
+        "value": 0
+      },
+      {
+        "id": 1,
+        "name": "Background",
+        "value": 1
+      },
+      {
+        "id": 2,
+        "name": "Character",
+        "value": 2
+      },
+      {
+        "id": 3,
+        "name": "UI",
+        "value": 3
+      }
+    ],
+    "increaseId": 3
+  },
+  "custom_joint_texture_layouts": []
+}
