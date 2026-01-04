@@ -1,4 +1,4 @@
-import { _decorator, Component, Sprite, UITransform, Widget, Enum, Vec2 } from 'cc';
+import { _decorator, Component, Sprite, UITransform, Widget, Enum, Vec2, Size } from 'cc';
 const { ccclass, property, executeInEditMode } = _decorator;
 
 /** Enum to specify which axis to fit the parent container on.*/
@@ -17,9 +17,9 @@ const FitParentOnAxisEnum = Enum(FitParentOnAxis);
 @executeInEditMode(true)
 export class UIPreserveAspect extends Component {
     // #region Properties
-    private _sprite: Sprite | null = null;
-    private _uiTransform: UITransform | null = null;
-    private _uiWidget: Widget | null = null;
+    private sprite: Sprite | null = null;
+    private uiTransform: UITransform | null = null;
+    private parentUITransform: UITransform | null = null;
 
     /** Axis to force-fit the parent container on while preserving the other axis to maintain the image ratio. */
     @property({ type: FitParentOnAxis })
@@ -41,84 +41,122 @@ export class UIPreserveAspect extends Component {
      * Caches the required components if they haven't been cached yet.
      */
     private cacheComponent() {
-        if (!this._sprite) {
-            this._sprite = this.getComponent(Sprite);
+        if (!this.sprite) {
+            this.sprite = this.getComponent(Sprite);
         }
-        if (!this._uiTransform) {
-            this._uiTransform = this.getComponent(UITransform);
+        if (!this.uiTransform) {
+            this.uiTransform = this.getComponent(UITransform);
         }
-        if (!this._uiWidget) {
-            this._uiWidget = this.getComponent(Widget);
+        if (!this.parentUITransform) {
+            this.parentUITransform = this.getParentUITransform();
         }
-
-        if (this._uiWidget) {
-            this._uiWidget.alignMode = Widget.AlignMode.ALWAYS;
-        }
-
     }
 
     /**
      * Updates the node's scale to fit the sprite frame within the container 
-     * without distortion.
+     * without distortion. This method is a short orchestrator that defers
+     * work to smaller helper methods for readability and testability.
      */
     updateAspect() {
         this.cacheComponent();
+        if (!this.ensureNoNullComponents()) {
+            return;
+        }
 
-        // Ensure both components are available
-        if (!this._sprite || !this._sprite.spriteFrame) {
+        // Center and size this node to match the parent
+        this.centerAndMatchParent(this.parentUITransform);
+
+        // Compute scales
+        const containerSize = this.parentUITransform.contentSize;
+        const originalSize = this.sprite.spriteFrame.originalSize;
+
+        const uniformScale = this.computeUniformScale(containerSize, originalSize);
+        const { scaleX, scaleY } = this.computeScales(containerSize, originalSize, uniformScale);
+
+        // Apply scale and optionally update widget alignment
+        this.node.setScale(scaleX, scaleY, 1);
+
+        // log the scaling for debugging
+        // console.log(`UIPreserveAspect: Set scaleX=${scaleX}, scaleY=${scaleY}. Container Size: ${containerSize.width}x${containerSize.height}, Image Size: ${originalSize.width}x${originalSize.height}`);
+    }
+
+    /**
+     * Check that required components are not null, logging warnings if they are missing.
+     * Returns true if all components are present, false otherwise.
+     */
+    private ensureNoNullComponents(): boolean {
+        if (!this.sprite || !this.sprite.spriteFrame) {
             console.warn(`UIPreserveAspect, node ${this.node.name}: Sprite or SpriteFrame is missing.`);
             return;
         }
-        if (!this._uiTransform) {
+        if (!this.uiTransform) {
             console.warn(`UIPreserveAspect, node ${this.node.name}: UITransform component is missing.`);
             return;
         }
-        
-        // Use the parent's UITransform as the container we should fit into
+        const parentUI = this.getParentUITransform();
+        if (!parentUI) {
+            return; // warnings already emitted by helper
+        }
+        // passed all checks
+        return true;
+    }
+
+    /**
+     * Return parent's UITransform or null (and log a warning) if missing.
+     */
+    private getParentUITransform(): UITransform | null {
         const parent = this.node.parent;
         if (!parent) {
             console.warn(`UIPreserveAspect, node ${this.node.name}: Parent node is missing.`);
-            return;
+            return null;
         }
         const parentUI = parent.getComponent(UITransform);
         if (!parentUI) {
             console.warn(`UIPreserveAspect, node ${this.node.name}: Parent UITransform is missing.`);
-            return;
+            return null;
         }
+        return parentUI;
+    }
 
-        // Make this node centered and sized to match the parent container
+    /**
+     * Center this node and make its contentSize match the parent container.
+     */
+    private centerAndMatchParent(parentUI: UITransform) {
         this.node.setPosition(0, 0, 0);
-        this._uiTransform.anchorPoint = new Vec2(0.5, 0.5);
-        this._uiTransform.setContentSize(parentUI.contentSize.width, parentUI.contentSize.height);
+        if (this.uiTransform) {
+            this.uiTransform.anchorPoint = new Vec2(0.5, 0.5);
+            this.uiTransform.setContentSize(parentUI.contentSize.width, parentUI.contentSize.height);
+        }
+    }
 
-        const containerSize = parentUI.contentSize;  // Desired container size
-        const originalSize = this._sprite.spriteFrame.originalSize;  // Original image size
-
+    /**
+     * Compute a uniform scale that fits the image entirely inside the container.
+     */
+    private computeUniformScale(containerSize: Size, originalSize: Size): number {
         const containerRatio = containerSize.width / containerSize.height;
         const imageRatio = originalSize.width / originalSize.height;
 
-        // First: compute a uniform scale that fits the image entirely inside the container
-        let uniformScale: number;
         if (imageRatio > containerRatio) {
             // Image is relatively wider than the container: fit by width
-            uniformScale = containerSize.width / originalSize.width;
+            return containerSize.width / originalSize.width;
         } else {
             // Image is relatively taller than the container: fit by height
-            uniformScale = containerSize.height / originalSize.height;
+            return containerSize.height / originalSize.height;
         }
+    }
 
+    /**
+     * Compute axis-specific scales based on fit mode while preserving aspect ratio.
+     */
+    private computeScales(containerSize: Size, originalSize: Size, uniformScale: number): { scaleX: number, scaleY: number } {
         // Start with the uniform scale so the image fits the container without distortion
         let scaleX = uniformScale;
         let scaleY = uniformScale;
 
-        // Then, if requested, force-fit the chosen parent axis and preserve the image ratio in the other axis.
-        // Note: we set the node's contentSize to match the parent, so setting scale=1 on the forced axis keeps that axis matching the parent.
-        // We compute the other axis scale so the displayed image preserves the original aspect ratio.
         switch (this.fitParentOnAxis) {
             case FitParentOnAxis.Horizontal:
                 // Force width to match container width: keep scaleX = 1 (content width already equals container width),
-                // compute scaleY so displayed height = containerWidth * (originalHeight/originalWidth)
-                // scaleY = (containerWidth * originalHeight / originalWidth) / containerHeight
+                // compute scaleY so displayed height = containerWidth * (originalHeight/originalWidth) / containerHeight
                 scaleX = 1;
                 if (containerSize.height > 0 && originalSize.width > 0) {
                     scaleY = (containerSize.width * originalSize.height) / (originalSize.width * containerSize.height);
@@ -128,8 +166,7 @@ export class UIPreserveAspect extends Component {
                 break;
             case FitParentOnAxis.Vertical:
                 // Force height to match container height: keep scaleY = 1 (content height already equals container height),
-                // compute scaleX so displayed width = containerHeight * (originalWidth/originalHeight)
-                // scaleX = (containerHeight * originalWidth / originalHeight) / containerWidth
+                // compute scaleX so displayed width = containerHeight * (originalWidth/originalHeight) / containerWidth
                 scaleY = 1;
                 if (containerSize.width > 0 && originalSize.height > 0) {
                     scaleX = (containerSize.height * originalSize.width) / (originalSize.height * containerSize.width);
@@ -142,13 +179,7 @@ export class UIPreserveAspect extends Component {
                 break;
         }
 
-        this.node.setScale(scaleX, scaleY, 1);
-        // log the scaling for debugging
-        console.log(`UIPreserveAspect: Set scaleX=${scaleX}, scaleY=${scaleY}. Container Size: ${containerSize.width}x${containerSize.height}, Image Size: ${originalSize.width}x${originalSize.height}`);
-    }
-
-    onLoad() {
-        this.updateAspect();
+        return { scaleX, scaleY };
     }
     // #endregion Logic
 }
