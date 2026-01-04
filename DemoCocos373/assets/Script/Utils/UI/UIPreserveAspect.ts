@@ -85,19 +85,26 @@ export class UIPreserveAspect extends Component {
      * Returns true if all components are present, false otherwise.
      */
     private ensureNoNullComponents(): boolean {
+        // Guard: sprite & spriteFrame must exist
         if (!this.sprite || !this.sprite.spriteFrame) {
             console.warn(`UIPreserveAspect, node ${this.node.name}: Sprite or SpriteFrame is missing.`);
-            return;
+            return false;
         }
+
+        // Guard: this node must have a UITransform
         if (!this.uiTransform) {
             console.warn(`UIPreserveAspect, node ${this.node.name}: UITransform component is missing.`);
-            return;
+            return false;
         }
-        const parentUI = this.getParentUITransform();
+
+        // Ensure we have the parent's UITransform (helper logs a warning when missing).
+        const parentUI = this.parentUITransform ?? this.getParentUITransform();
         if (!parentUI) {
-            return; // warnings already emitted by helper
+            return false;
         }
-        // passed all checks
+
+        // Cache parent UITransform for further use
+        this.parentUITransform = parentUI;
         return true;
     }
 
