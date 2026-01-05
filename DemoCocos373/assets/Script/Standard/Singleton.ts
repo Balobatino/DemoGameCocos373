@@ -1,4 +1,4 @@
-import { Component, director } from 'cc';
+import { Component, director } from "cc";
 
 /**
  * Generic Component singleton base.
@@ -47,10 +47,29 @@ export abstract class Singleton<T extends Component> extends Component {
     }
 
     /**
-     * Finalized onDestroy: clears the singleton reference for this subclass.
-     * Subclasses should not override this method.
+     * Final onStart implementation: performs singleton-check and then calls hook.
+     *
+     * Subclasses MUST NOT override onStart directly. Instead override `doOnStart`
+     * to run subclass-specific start logic.
+     */
+    protected onStart(): void {
+        // Only run start logic for the claimed singleton instance.
+        if ((this.constructor as any).instance !== this) return;
+
+        this.doOnStart();
+    }
+
+    /**
+     * Finalized onDestroy: performs singleton-check, calls hook, and clears reference.
+     * Subclasses should not override this method. Instead override `doOnDestroy` for cleanup.
      */
     protected onDestroy(): void {
+        // Only run destroy logic for the claimed singleton instance.
+        if ((this.constructor as any).instance !== this) return;
+
+        // Let subclass perform cleanup.
+        this.doOnDestroy();
+
         // Clear instance reference when this node is destroyed.
         if ((this.constructor as any).instance === this) {
             (this.constructor as any).instance = null;
@@ -104,5 +123,21 @@ export abstract class Singleton<T extends Component> extends Component {
      */
     protected doOnDisable(): void {
         // Intentionally empty: override in subclasses for disable-time logic.
+    }
+
+    /**
+     * Subclass hook called when the singleton instance is started.
+     * Default implementation does nothing; override to add behavior.
+     */
+    protected doOnStart(): void {
+        // Intentionally empty: override in subclasses for start-time logic.
+    }
+
+    /**
+     * Subclass hook called when the singleton instance is destroyed.
+     * Default implementation does nothing; override to add behavior.
+     */
+    protected doOnDestroy(): void {
+        // Intentionally empty: override in subclasses for destroy-time logic.
     }
 }
