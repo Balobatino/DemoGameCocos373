@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Sprite, Color, tween, easing, Enum, CCFloat } from "cc";
+import { _decorator, Component, Node, Sprite, Color, tween, easing, Enum, CCFloat, UIOpacity } from "cc";
 import { Singleton } from "../Standard/Singleton";
 const { ccclass, property } = _decorator;
 
@@ -23,6 +23,9 @@ export class SplashLoadingCover extends Singleton<SplashLoadingCover> {
     // Internal reference to the current active Tween so it can be stopped.
     private _activeTween: any | null = null;
 
+    // Cached UIOpacity component (added on demand).
+    private uiOpacity: UIOpacity | null = null;
+
     //------------------------------
     //--------- Lifecycle Methods
     protected doOnDestroy(): void {
@@ -30,17 +33,39 @@ export class SplashLoadingCover extends Singleton<SplashLoadingCover> {
         this.cancelFade();
     }
 
+    protected doOnLoad(): void {
+        if (!this.screenCover) return;
+        // Cache UIOpacity at load time to avoid repeated lookups and to ensure it exists.
+        this.uiOpacity = this.screenCover.node.getComponent(UIOpacity) ?? this.screenCover.node.addComponent(UIOpacity);
+    }
+
     //------------------------------
     //--------- Public Methods -----
+
+    private getNodeOpacity(): number {
+        if (this.uiOpacity) return this.uiOpacity.opacity;
+        // If we can't get a UIOpacity for some reason, return fully opaque as a safe default.
+        return 255;
+    }
+
+    private setNodeOpacity(value: number): void {
+        if (!this.uiOpacity) return;
+        this.uiOpacity.opacity = value;
+        // Ensure the sprite color alpha remains fully opaque so UIOpacity controls visibility.
+        // Setting color alpha to 0 would make the visual stay invisible regardless of UIOpacity.
+        if (!this.screenCover) return;
+        const c = this.screenCover.color;
+        this.screenCover.color = new Color(c.r, c.g, c.b, 255);
+    }
+
     /**
      * Immediately set the cover to black and fully opaque.
      */
     public coverScreen(): void {
         if (!this.screenCover) return;
-
-        // Set to black with full alpha (255 = fully opaque).
-        const c = new Color(0, 0, 0, 255);
-        this.screenCover.color = c;
+        // Ensure sprite is black and node is fully opaque.
+        this.screenCover.color = new Color(0, 0, 0, 255);
+        this.setNodeOpacity(255);
     }
 
     /**
@@ -53,8 +78,9 @@ export class SplashLoadingCover extends Singleton<SplashLoadingCover> {
             return;
         }
 
-        // Set color to black and fully opaque.
+        // Ensure sprite is black and node starts fully opaque.
         this.screenCover.color = new Color(0, 0, 0, 255);
+        this.setNodeOpacity(255);
 
         // Stop any active tween.
         if (this._activeTween) {
@@ -62,14 +88,21 @@ export class SplashLoadingCover extends Singleton<SplashLoadingCover> {
             this._activeTween = null;
         }
 
-        // Tween alpha from 255 -> 0
-        const t = tween(this.screenCover.color)
-            .to(this.fadeAnimationDuration, { a: 0 }, { easing: easing.linear })
+        // Tween the UIOpacity component (preferred).
+        // console.log(`SplashLoadingCover: runFadeOut started (duration=${this.fadeAnimationDuration}s)`);
+        if (!this.uiOpacity) {
+            console.warn("SplashLoadingCover: UIOpacity component missing; can't animate opacity reliably.");
+            if (onComplete) onComplete();
+            return;
+        }
+        const t = tween(this.uiOpacity)
+            .to(this.fadeAnimationDuration, { opacity: 0 }, { easing: easing.linear })
             .call(() => {
                 this._activeTween = null;
+                console.log(`SplashLoadingCover: runFadeOut complete`);
                 if (onComplete) onComplete();
             });
-
+        // Set active tween and start it.
         this._activeTween = t;
         t.start();
     }
@@ -84,8 +117,10 @@ export class SplashLoadingCover extends Singleton<SplashLoadingCover> {
             return;
         }
 
-        // Set color to black and fully transparent.
-        this.screenCover.color = new Color(0, 0, 0, 0);
+        // Ensure sprite starts black; keep it transparent via UIOpacity (not color alpha).
+        // Setting color alpha to 0 would make the visual stay invisible regardless of UIOpacity.
+        this.screenCover.color = new Color(0, 0, 0, 255);
+        this.setNodeOpacity(0);
 
         // Stop any active tween.
         if (this._activeTween) {
@@ -93,11 +128,18 @@ export class SplashLoadingCover extends Singleton<SplashLoadingCover> {
             this._activeTween = null;
         }
 
-        // Tween alpha from 0 -> 255
-        const t = tween(this.screenCover.color)
-            .to(this.fadeAnimationDuration, { a: 255 }, { easing: easing.linear })
+        // Tween the UIOpacity component (preferred).
+        // console.log(`SplashLoadingCover: runFadeIn started (duration=${this.fadeAnimationDuration}s)`);
+        if (!this.uiOpacity) {
+            console.warn("SplashLoadingCover: UIOpacity component missing; can't animate opacity reliably.");
+            if (onComplete) onComplete();
+            return;
+        }
+        const t = tween(this.uiOpacity)
+            .to(this.fadeAnimationDuration, { opacity: 255 }, { easing: easing.linear })
             .call(() => {
                 this._activeTween = null;
+                console.log(`SplashLoadingCover: runFadeIn complete`);
                 if (onComplete) onComplete();
             });
 
