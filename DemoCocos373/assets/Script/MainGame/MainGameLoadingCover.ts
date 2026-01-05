@@ -3,10 +3,10 @@ import { Singleton } from "../Standard/Singleton";
 const { ccclass, property } = _decorator;
 
 /**
- * Component that manages a full-screen splash loading cover with fade-in and fade-out animations.
+ * Component that manages a full-screen main-game loading cover with fade-in and fade-out animations.
  */
-@ccclass("SplashLoadingCover")
-export class SplashLoadingCover extends Singleton<SplashLoadingCover> {
+@ccclass("MainGameLoadingCover")
+export class MainGameLoadingCover extends Singleton<MainGameLoadingCover> {
     //--------------------------
     //--------- Properties -----
 
@@ -49,6 +49,7 @@ export class SplashLoadingCover extends Singleton<SplashLoadingCover> {
     }
 
     private setNodeOpacity(value: number): void {
+        // set opacity
         if (!this.uiOpacity) return;
         this.uiOpacity.opacity = value;
         // Ensure the sprite color alpha remains fully opaque so UIOpacity controls visibility.
@@ -63,6 +64,9 @@ export class SplashLoadingCover extends Singleton<SplashLoadingCover> {
      */
     public coverScreen(): void {
         if (!this.screenCover) return;
+        // active the sprite first, in Editor we disable it by default so it won't block view
+        if (!this.screenCover) return;
+        this.screenCover.enabled = true;
         // Ensure sprite is black and node is fully opaque.
         this.screenCover.color = new Color(0, 0, 0, 255);
         this.setNodeOpacity(255);
@@ -78,6 +82,10 @@ export class SplashLoadingCover extends Singleton<SplashLoadingCover> {
             return;
         }
 
+        // active the sprite first, in Editor we disable it by default so it won't block view
+        if (!this.screenCover) return;
+        this.screenCover.enabled = true;
+
         // Ensure sprite is black and node starts fully opaque.
         this.screenCover.color = new Color(0, 0, 0, 255);
         this.setNodeOpacity(255);
@@ -89,9 +97,9 @@ export class SplashLoadingCover extends Singleton<SplashLoadingCover> {
         }
 
         // Tween the UIOpacity component (preferred).
-        // console.log(`SplashLoadingCover: runFadeOut started (duration=${this.fadeAnimationDuration}s)`);
+        // console.log(`MainGameLoadingCover: runFadeOut started (duration=${this.fadeAnimationDuration}s)`);
         if (!this.uiOpacity) {
-            console.warn("SplashLoadingCover: UIOpacity component missing; can't animate opacity reliably.");
+            console.warn("MainGameLoadingCover: UIOpacity component missing; can't animate opacity reliably.");
             if (onComplete) onComplete();
             return;
         }
@@ -99,7 +107,7 @@ export class SplashLoadingCover extends Singleton<SplashLoadingCover> {
             .to(this.fadeAnimationDuration, { opacity: 0 }, { easing: easing.linear })
             .call(() => {
                 this._activeTween = null;
-                // console.log(`SplashLoadingCover: runFadeOut complete`);
+                // console.log(`MainGameLoadingCover: runFadeOut complete`);
                 if (onComplete) onComplete();
             });
         // Set active tween and start it.
@@ -117,6 +125,10 @@ export class SplashLoadingCover extends Singleton<SplashLoadingCover> {
             return;
         }
 
+        // enable the sprite first, in Editor we disable it by default so it won't block view
+        if (!this.screenCover) return;
+        this.screenCover.enabled = true;
+
         // Ensure sprite starts black; keep it transparent via UIOpacity (not color alpha).
         // Setting color alpha to 0 would make the visual stay invisible regardless of UIOpacity.
         this.screenCover.color = new Color(0, 0, 0, 255);
@@ -129,9 +141,9 @@ export class SplashLoadingCover extends Singleton<SplashLoadingCover> {
         }
 
         // Tween the UIOpacity component (preferred).
-        // console.log(`SplashLoadingCover: runFadeIn started (duration=${this.fadeAnimationDuration}s)`);
+        // console.log(`MainGameLoadingCover: runFadeIn started (duration=${this.fadeAnimationDuration}s)`);
         if (!this.uiOpacity) {
-            console.warn("SplashLoadingCover: UIOpacity component missing; can't animate opacity reliably.");
+            console.warn("MainGameLoadingCover: UIOpacity component missing; can't animate opacity reliably.");
             if (onComplete) onComplete();
             return;
         }
@@ -139,7 +151,7 @@ export class SplashLoadingCover extends Singleton<SplashLoadingCover> {
             .to(this.fadeAnimationDuration, { opacity: 255 }, { easing: easing.linear })
             .call(() => {
                 this._activeTween = null;
-                // console.log(`SplashLoadingCover: runFadeIn complete`);
+                console.log(`MainGameLoadingCover: runFadeIn complete`);
                 if (onComplete) onComplete();
             });
 

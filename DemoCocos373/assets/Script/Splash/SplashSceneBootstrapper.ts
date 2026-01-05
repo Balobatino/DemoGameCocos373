@@ -20,8 +20,7 @@ export class SplashSceneBootstrapper extends Singleton<SplashSceneBootstrapper> 
 
     protected doOnStart(): void {
         // Start the full async splash flow without blocking the engine.
-        // log
-        console.log(`SplashSceneBootstrapper: doOnStart called. time ${game.totalTime / 1000}`);
+        // console.log(`SplashSceneBootstrapper: doOnStart called. time ${game.totalTime / 1000}`);
         void this.runProcess();
     }
 
@@ -32,7 +31,7 @@ export class SplashSceneBootstrapper extends Singleton<SplashSceneBootstrapper> 
 
     // The async splash flow described above.
     private async runProcess(): Promise<void> {
-        console.log(`SplashSceneBootstrapper: runProcess started. time ${game.totalTime / 1000}`);
+        // console.log(`SplashSceneBootstrapper: runProcess started. time ${game.totalTime / 1000}`);
         const loadingCover = SplashLoadingCover.getInstance<SplashLoadingCover>();
         // warn if no loading cover is present.
         if (!loadingCover) {
@@ -57,7 +56,7 @@ export class SplashSceneBootstrapper extends Singleton<SplashSceneBootstrapper> 
         }
 
         // Keep the splash visible for the configured duration.
-        console.log(`SplashSceneBootstrapper: waiting splash duration ${this.splashDuration}s. time ${game.totalTime / 1000}`);
+        // console.log(`SplashSceneBootstrapper: waiting splash duration ${this.splashDuration}s. time ${game.totalTime / 1000}`);
         await this.sleep(this.splashDuration * 1000);
 
         // Fade back to opaque before switching scenes.
@@ -68,7 +67,7 @@ export class SplashSceneBootstrapper extends Singleton<SplashSceneBootstrapper> 
         }
 
         // Finally load the main scene.
-        console.log(`SplashSceneBootstrapper: loading Main scene. time ${game.totalTime / 1000}`);
+        // console.log(`SplashSceneBootstrapper: loading Main scene. time ${game.totalTime / 1000}`);
         director.loadScene("Main");
     }
 }
