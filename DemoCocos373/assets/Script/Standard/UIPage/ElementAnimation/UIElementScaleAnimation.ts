@@ -19,10 +19,10 @@ export class UIElementScaleAnimation extends BaseUIElementAnimation {
     @property({ type: Enum(EasingType) })
     public showEasing: EasingType = EasingType.Linear;
 
-    @property({ type: Vec2 })
+    @property
     public showFromScale: Vec2 = new Vec2(0, 0);
 
-    @property({ type: Vec2 })
+    @property
     public showToScale: Vec2 = new Vec2(1, 1);
 
     // Hide animation configuration
@@ -32,10 +32,10 @@ export class UIElementScaleAnimation extends BaseUIElementAnimation {
     @property({ type: Enum(EasingType) })
     public hideEasing: EasingType = EasingType.Linear;
 
-    @property({ type: Vec2 })
+    @property
     public hideFromScale: Vec2 = new Vec2(1, 1);
 
-    @property({ type: Vec2 })
+    @property
     public hideToScale: Vec2 = new Vec2(0, 0);
 
     // Track active tween so we can cancel/replace it when necessary.

@@ -14,7 +14,7 @@ const { ccclass, property } = _decorator;
 @ccclass("UIElementMoveAnimation")
 export class UIElementMoveAnimation extends BaseUIElementAnimation {
     // Cached default position (world-local 2D position) captured in onLoad().
-    @property({ type: Vec2 })
+    @property
     public defaultPosition: Vec2 = new Vec2(0, 0);
 
     // Show animation configuration
@@ -24,10 +24,10 @@ export class UIElementMoveAnimation extends BaseUIElementAnimation {
     @property({ type: Enum(EasingType) })
     public showEasing: EasingType = EasingType.Linear;
 
-    @property({ type: Vec2 })
+    @property
     public showFrom: Vec2 = new Vec2(0, 0);
 
-    @property({ type: Vec2 })
+    @property
     public showTo: Vec2 = new Vec2(0, 0);
 
     // Hide animation configuration
@@ -37,11 +37,12 @@ export class UIElementMoveAnimation extends BaseUIElementAnimation {
     @property({ type: Enum(EasingType) })
     public hideEasing: EasingType = EasingType.Linear;
 
-    @property({ type: Vec2 })
+    @property
     public hideFrom: Vec2 = new Vec2(0, 0);
 
-    @property({ type: Vec2 })
+    @property
     public hideTo: Vec2 = new Vec2(0, 0);
+    //
 
     // Track active tween so we can cancel/replace it when necessary.
     private _activeTween: any = null;
