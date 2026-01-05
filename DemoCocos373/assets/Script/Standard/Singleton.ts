@@ -12,10 +12,14 @@ import { Component, director } from "cc";
  * - Call makePersistent() in onLoad/onEnable if you want the node to persist across scenes.
  */
 export abstract class Singleton<T extends Component> extends Component {
+    // ------------------------------
+    //--------- Static Instance -----
     // Per-subclass instance is stored on the constructor at runtime.
     // We use `any` because TypeScript cannot express per-subclass static generics well.
     private static instance: any = null;
 
+    //--------------------------
+    //--------- Public Static Methods
     /**
      * Return the singleton instance for this subclass, or null if none exists.
      */
@@ -30,6 +34,9 @@ export abstract class Singleton<T extends Component> extends Component {
     public static hasInstance(): boolean {
         return (this as any).instance != null;
     }
+
+    //--------------------------
+    //--------- Lifecycle Methods
 
     /**
      * Finalized onLoad: claim singleton and destroy duplicates.
@@ -108,6 +115,9 @@ export abstract class Singleton<T extends Component> extends Component {
 
         this.doOnDisable();
     }
+
+    // -------------------------------
+    //--------- Protected Hook Methods
 
     /**
      * Subclass hook called when the singleton instance is enabled.

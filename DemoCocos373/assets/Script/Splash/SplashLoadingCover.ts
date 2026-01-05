@@ -1,19 +1,37 @@
-import { _decorator, Component, Node, Sprite, Color, tween, easing } from 'cc';
+import { _decorator, Component, Node, Sprite, Color, tween, easing, Enum, CCFloat } from "cc";
+import { Singleton } from "../Standard/Singleton";
 const { ccclass, property } = _decorator;
 
-@ccclass('SplashLoadingCover')
-export class SplashLoadingCover extends Component {
+/**
+ * Component that manages a full-screen splash loading cover with fade-in and fade-out animations.
+ */
+@ccclass("SplashLoadingCover")
+export class SplashLoadingCover extends Singleton<SplashLoadingCover> {
+    //--------------------------
+    //--------- Properties -----
+
     // Reference to the full-screen cover sprite (assign in the editor).
     @property(Sprite)
     screenCover: Sprite | null = null;
 
     // Duration (in seconds) for fade animations.
-    @property({ type: Number })
+    @property({ type: CCFloat })
     fadeAnimationDuration = 0.5;
 
+    //------------------------------
+    //--------- Private Members
     // Internal reference to the current active Tween so it can be stopped.
     private _activeTween: any | null = null;
 
+    //------------------------------
+    //--------- Lifecycle Methods
+    protected doOnDestroy(): void {
+        // Clean up any active tween on destroy.
+        this.cancelFade();
+    }
+
+    //------------------------------
+    //--------- Public Methods -----
     /**
      * Immediately set the cover to black and fully opaque.
      */
@@ -97,4 +115,3 @@ export class SplashLoadingCover extends Component {
         }
     }
 }
-
