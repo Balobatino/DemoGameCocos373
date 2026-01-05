@@ -21,6 +21,10 @@ export class UIElementMoveAnimation extends BaseUIElementAnimation {
     @property
     public showDuration: number = 0.2;
 
+    // Delay before the show animation starts (seconds).
+    @property
+    public showDelay: number = 0;
+
     @property({ type: Enum(EasingType) })
     public showEasing: EasingType = EasingType.Linear;
 
@@ -34,6 +38,10 @@ export class UIElementMoveAnimation extends BaseUIElementAnimation {
     @property
     public hideDuration: number = 0.15;
 
+    // Delay before the hide animation starts (seconds).
+    @property
+    public hideDelay: number = 0;
+
     @property({ type: Enum(EasingType) })
     public hideEasing: EasingType = EasingType.Linear;
 
@@ -42,7 +50,6 @@ export class UIElementMoveAnimation extends BaseUIElementAnimation {
 
     @property
     public hideTo: Vec2 = new Vec2(0, 0);
-    //
 
     // Track active tween so we can cancel/replace it when necessary.
     private _activeTween: any = null;
@@ -77,6 +84,7 @@ export class UIElementMoveAnimation extends BaseUIElementAnimation {
         this.node.setPosition(fromPos.x, fromPos.y, z);
 
         const t = tween(this.node)
+            .delay(this.showDelay)
             .to(this.showDuration, { position: new Vec3(toPos.x, toPos.y, z) }, { easing: EasingMap.get(this.showEasing) })
             .call(() => {
                 this._activeTween = null;
@@ -110,6 +118,7 @@ export class UIElementMoveAnimation extends BaseUIElementAnimation {
         this.node.setPosition(fromPos.x, fromPos.y, z);
 
         const t = tween(this.node)
+            .delay(this.hideDelay)
             .to(this.hideDuration, { position: new Vec3(toPos.x, toPos.y, z) }, { easing: EasingMap.get(this.hideEasing) })
             .call(() => {
                 this._activeTween = null;

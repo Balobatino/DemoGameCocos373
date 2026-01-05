@@ -16,6 +16,10 @@ export class UIElementScaleAnimation extends BaseUIElementAnimation {
     @property
     public showDuration: number = 0.2;
 
+    // Delay before the show animation starts (seconds).
+    @property
+    public showDelay: number = 0;
+
     @property({ type: Enum(EasingType) })
     public showEasing: EasingType = EasingType.Linear;
 
@@ -28,6 +32,10 @@ export class UIElementScaleAnimation extends BaseUIElementAnimation {
     // Hide animation configuration
     @property
     public hideDuration: number = 0.15;
+
+    // Delay before the hide animation starts (seconds).
+    @property
+    public hideDelay: number = 0;
 
     @property({ type: Enum(EasingType) })
     public hideEasing: EasingType = EasingType.Linear;
@@ -62,6 +70,7 @@ export class UIElementScaleAnimation extends BaseUIElementAnimation {
         this.node.setScale(from.x, from.y, z);
 
         const t = tween(this.node)
+            .delay(this.showDelay)
             .to(this.showDuration, { scale: new Vec3(to.x, to.y, z) }, { easing: EasingMap.get(this.showEasing) })
             .call(() => {
                 this._activeTween = null;
@@ -93,6 +102,7 @@ export class UIElementScaleAnimation extends BaseUIElementAnimation {
         this.node.setScale(from.x, from.y, z);
 
         const t = tween(this.node)
+            .delay(this.hideDelay)
             .to(this.hideDuration, { scale: new Vec3(to.x, to.y, z) }, { easing: EasingMap.get(this.hideEasing) })
             .call(() => {
                 this._activeTween = null;

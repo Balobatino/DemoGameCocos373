@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, CCFloat, game } from "cc";
 import { Singleton } from "../Standard/Singleton";
 import { MainGameLoadingCover } from "./MainGameLoadingCover";
+import { GameMainPage } from "./UI/GameMainPage";
 const { ccclass, property } = _decorator;
 
 /**
@@ -48,7 +49,26 @@ export class MainGameBoostrapper extends Singleton<MainGameBoostrapper> {
             await this.sleep(loadingCover.fadeAnimationDuration * 1000);
         }
 
-        // Stop here for now; more steps will be added later.
-        // console.log(`MainGameBoostrapper: stopped after fadeOut (TODO: continue flow). time ${game.totalTime / 1000}`);
+        // Show the main UI page (if present) now that loading is finished.
+        this.openMainPage();
+    }
+
+    /**
+     * Show the main UI page by fetching the GameMainPage singleton and calling show().
+     * Logs warnings if the singleton or UIPage component is missing.
+     */
+    private openMainPage(): void {
+        const gameMainPage = GameMainPage.getInstance<GameMainPage>();
+        if (!gameMainPage) {
+            console.warn("GameMainPage singleton instance not found in Main scene.");
+            return;
+        }
+
+        const uiPage = gameMainPage.getUiPage();
+        if (uiPage) {
+            uiPage.show();
+        } else {
+            console.warn("GameMainPage: UIPage component not found; cannot call show().");
+        }
     }
 }
