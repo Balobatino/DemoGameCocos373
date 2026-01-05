@@ -1,5 +1,6 @@
 import { _decorator, Component, Node } from "cc";
 import { UIElement } from "./UIElement";
+import { setAsLastSibling } from "../../Utils/NodeUtils";
 const { ccclass, property } = _decorator;
 
 /**
@@ -35,12 +36,20 @@ export class UIPage extends Component {
     //------ Public Methods
 
     public show(): void {
+        // Ensure this page is rendered above sibling pages by moving it to the
+        // last sibling position in the parent.
+        setAsLastSibling(this.node);
+
         for (const element of this.uiElements) {
             element.playShowAnimation();
         }
     }
 
     public hide(): void {
+        // Keep the same stacking behavior on hide to ensure animations are
+        // visible if other UI overlaps during the hide animation.
+        setAsLastSibling(this.node);
+
         for (const element of this.uiElements) {
             element.playHideAnimation();
         }
