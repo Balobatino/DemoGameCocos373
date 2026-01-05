@@ -1,4 +1,4 @@
-import { _decorator, Component, Sprite, UITransform, Widget, Enum, Vec2, Size } from 'cc';
+import { _decorator, Component, Sprite, UITransform, Widget, Enum, Vec2, Size } from "cc";
 const { ccclass, property, executeInEditMode } = _decorator;
 
 /** Enum to specify which axis to fit the parent container on.*/
@@ -10,10 +10,10 @@ export enum FitParentOnAxis {
 const FitParentOnAxisEnum = Enum(FitParentOnAxis);
 
 /**
- * Component that adjusts node scale to maintain the aspect ratio of a Sprite 
+ * Component that adjusts node scale to maintain the aspect ratio of a Sprite
  * based on its UITransform content size.
  */
-@ccclass('UIPreserveAspect')
+@ccclass("UIPreserveAspect")
 @executeInEditMode(true)
 export class UIPreserveAspect extends Component {
     // #region Properties
@@ -29,6 +29,7 @@ export class UIPreserveAspect extends Component {
     // #region Lifecycle
     onEnable() {
         this.updateAspect();
+        // console.log(`UIPreserveAspect: onEnable called for node ${this.node.name}`);
     }
 
     onDisable() {
@@ -53,7 +54,7 @@ export class UIPreserveAspect extends Component {
     }
 
     /**
-     * Updates the node's scale to fit the sprite frame within the container 
+     * Updates the node's scale to fit the sprite frame within the container
      * without distortion. This method is a short orchestrator that defers
      * work to smaller helper methods for readability and testability.
      */
@@ -155,7 +156,7 @@ export class UIPreserveAspect extends Component {
     /**
      * Compute axis-specific scales based on fit mode while preserving aspect ratio.
      */
-    private computeScales(containerSize: Size, originalSize: Size, uniformScale: number): { scaleX: number, scaleY: number } {
+    private computeScales(containerSize: Size, originalSize: Size, uniformScale: number): { scaleX: number; scaleY: number } {
         // Start with the uniform scale so the image fits the container without distortion
         let scaleX = uniformScale;
         let scaleY = uniformScale;

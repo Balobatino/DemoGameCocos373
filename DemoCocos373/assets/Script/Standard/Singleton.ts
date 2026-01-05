@@ -40,7 +40,7 @@ export abstract class Singleton<T extends Component> extends Component {
 
     /**
      * Finalized onLoad: claim singleton and destroy duplicates.
-     * Subclasses should not override this method. Use `doOnEnable()` for enable-time logic.
+     * Subclasses should not override this method. Use `doOnLoad()` for load-time logic and `doOnEnable()` for enable-time logic.
      */
     protected onLoad(): void {
         // If a different instance exists already, destroy this duplicate node.
@@ -51,6 +51,9 @@ export abstract class Singleton<T extends Component> extends Component {
         }
         // Claim singleton instance for this subclass.
         (this.constructor as any).instance = this;
+
+        // Hook for subclasses that need to run load-time initialization.
+        this.doOnLoad();
     }
 
     /**
@@ -149,5 +152,13 @@ export abstract class Singleton<T extends Component> extends Component {
      */
     protected doOnDestroy(): void {
         // Intentionally empty: override in subclasses for destroy-time logic.
+    }
+
+    /**
+     * Subclass hook called when the singleton instance is loaded (onLoad).
+     * Default implementation does nothing; override to add load-time initialization.
+     */
+    protected doOnLoad(): void {
+        // Intentionally empty: override in subclasses for load-time logic.
     }
 }
