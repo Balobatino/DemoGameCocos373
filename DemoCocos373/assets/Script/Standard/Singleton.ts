@@ -59,10 +59,10 @@ export abstract class Singleton<T extends Component> extends Component {
      * Subclasses MUST NOT override onStart directly. Instead override `doOnStart`
      * to run subclass-specific start logic.
      */
-    protected onStart(): void {
+    protected start(): void {
         // Only run start logic for the claimed singleton instance.
         if ((this.constructor as any).instance !== this) return;
-
+        // console.log(`Singleton: onStart called for ${this.constructor.name} , node ${this.node.name}`);
         this.doOnStart();
     }
 
