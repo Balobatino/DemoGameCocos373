@@ -25,6 +25,10 @@ export class UIPage extends Component {
 
     // Cached UIOpacity component (initialized in onLoad and assumed non-null afterwards).
     private uiOpacity!: UIOpacity;
+    // Cache duration values. A negative sentinel (-99) indicates the duration has
+    // not been computed / cached yet; valid animation durations are expected to be >= 0.
+    private cacheShowDuration: number = -99;
+    private cacheHideDuration: number = -99;
 
     //------------------------------
     //--- Lifecycle Methods
@@ -92,5 +96,27 @@ export class UIPage extends Component {
         for (const element of this.uiElements) {
             element.playHideAnimation();
         }
+    }
+
+    public getShowDuration(): number {
+        if (this.cacheShowDuration >= 0) return this.cacheShowDuration;
+        let max = 0;
+        for (const element of this.uiElements) {
+            const d = element.getShowDuration();
+            if (d > max) max = d;
+        }
+        this.cacheShowDuration = max;
+        return max;
+    }
+
+    public getHideDuration(): number {
+        if (this.cacheHideDuration >= 0) return this.cacheHideDuration;
+        let max = 0;
+        for (const element of this.uiElements) {
+            const d = element.getHideDuration();
+            if (d > max) max = d;
+        }
+        this.cacheHideDuration = max;
+        return max;
     }
 }

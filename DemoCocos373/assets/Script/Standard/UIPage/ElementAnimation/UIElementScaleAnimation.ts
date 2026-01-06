@@ -121,4 +121,13 @@ export class UIElementScaleAnimation extends BaseUIElementAnimation {
     public playHideAnimation(): void {
         this.hide();
     }
+
+    // Report total durations (including delays)
+    public getShowDuration(): number {
+        return this.showDelay + this.showDuration;
+    }
+
+    public getHideDuration(): number {
+        return this.hideDelay + this.hideDuration;
+    }
 }
