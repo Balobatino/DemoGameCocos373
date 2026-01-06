@@ -9,7 +9,7 @@ export class LevelData {
     /**
      * The size of the level in grid units (columns, rows).
      */
-    @prop({ type: Vec2 })
+    @prop
     public size: Vec2 = new Vec2();
 }
 
@@ -18,8 +18,8 @@ export class LevelData {
  * Attach this component to a Node, configure `levels` in the inspector
  * and save the Node as a prefab to persist configuration in the Assets panel.
  */
-@ccclass("LevelDataStorageComponent")
-export class LevelDataStorageComponent extends Component {
+@ccclass("LevelDataStorage")
+export class LevelDataStorage extends Component {
     /**
      * Configured list of levels (editable in the inspector).
      */
