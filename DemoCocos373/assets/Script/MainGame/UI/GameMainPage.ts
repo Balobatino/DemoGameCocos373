@@ -1,6 +1,7 @@
 import { _decorator, Button, Component, Node } from "cc";
 import { Singleton } from "../../Standard/Singleton";
 import { UIPage } from "../../Standard/UIPage/UIPage";
+import { GameSettingPage } from "./GameSettingPage";
 const { ccclass, property } = _decorator;
 
 /**
@@ -86,16 +87,28 @@ export class GameMainPage extends Singleton<GameMainPage> {
      * Currently logs a message; actual game start logic to be implemented.
      */
     private onPlayGameButtonClicked(): void {
-        console.log("Play Game button clicked. Starting game...");
+        // console.log("Play Game button clicked. Starting game...");
     }
 
     /**
      * Handler for the Settings button click event.
-     * Opens the settings UI (placeholder).
+     * Opens the settings UI (by showing the GameSettingPage UIPage) if present.
      */
     private onSettingsButtonClicked(): void {
-        console.log("Settings button clicked. Opening settings...");
-        // TODO: show/toggle your settings UI here
+        // console.log("Settings button clicked. Opening settings...");
+
+        const gameSettingPage = GameSettingPage.getInstance<GameSettingPage>();
+        if (!gameSettingPage) {
+            console.warn("GameSettingPage singleton instance not found in Main scene.");
+            return;
+        }
+
+        const uiPage = gameSettingPage.getUiPage();
+        if (uiPage) {
+            uiPage.show();
+        } else {
+            console.warn("GameSettingPage: UIPage component not found; cannot call show().");
+        }
     }
 
     //------------------------------
