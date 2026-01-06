@@ -2,6 +2,7 @@ import { _decorator, Button } from "cc";
 import { Singleton } from "../../Standard/Singleton";
 import { UIPage } from "../../Standard/UIPage/UIPage";
 import { GameMainPage } from "./GameMainPage";
+import { GamePlayBoardPage } from "./GamePlayBoardPage";
 import { GameLevelSelectItem } from "./LevelSelectPage/GameLevelSelectItem";
 const { ccclass, property } = _decorator;
 
@@ -125,29 +126,21 @@ export class GameLevelSelectPage extends Singleton<GameLevelSelectPage> {
     private onItemSelected(levelIndex: number, item: GameLevelSelectItem): void {
         console.log(`Level selected: index=${levelIndex}, item node='${item.node.name}'`);
 
-        // // Hide this page if available.
-        // const uiPage = this.getUiPage();
-        // if (uiPage) {
-        //     uiPage.hide();
-        // } else {
-        //     console.warn("GameLevelSelectPage: UIPage component not found; cannot call hide().");
-        // }
+        // Hide this page if available.
+        const uiPage = this.getUiPage();
+        if (uiPage) {
+            uiPage.hide();
+        } else {
+            console.warn("GameLevelSelectPage: UIPage component not found; cannot call hide().");
+        }
 
-        // // Reopen the main page
-        // const gameMainPage = GameMainPage.getInstance<GameMainPage>();
-        // if (!gameMainPage) {
-        //     console.warn("GameMainPage singleton instance not found in Main scene.");
-        //     return;
-        // }
-
-        // const mainUiPage = gameMainPage.getUiPage();
-        // if (mainUiPage) {
-        //     mainUiPage.show();
-        // } else {
-        //     console.warn("GameMainPage: UIPage component not found; cannot call show().");
-        // }
-
-        // TODO: Forward the selected levelIndex to game flow (load level, update UI, etc.)
+        // Reopen the main page
+        const playBoardPage = GamePlayBoardPage.getInstance<GamePlayBoardPage>();
+        if (!playBoardPage) {
+            console.warn("GamePlayBoardPage singleton instance not found in Main scene.");
+            return;
+        }
+        playBoardPage.showAndLoadLevelWhenFinishAnimation(levelIndex);
     }
 
     //------------------------------
