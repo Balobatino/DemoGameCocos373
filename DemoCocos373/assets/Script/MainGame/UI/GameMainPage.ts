@@ -96,7 +96,15 @@ export class GameMainPage extends Singleton<GameMainPage> {
      */
     private onSettingsButtonClicked(): void {
         // console.log("Settings button clicked. Opening settings...");
+        //  hide the main page
+        const mainUiPage = this.getUiPage();
+        if (mainUiPage) {
+            mainUiPage.hide();
+        } else {
+            console.warn("GameMainPage: UIPage component not found; cannot call hide().");
+        }
 
+        // Open the GameSettingPage UIPage.
         const gameSettingPage = GameSettingPage.getInstance<GameSettingPage>();
         if (!gameSettingPage) {
             console.warn("GameSettingPage singleton instance not found in Main scene.");

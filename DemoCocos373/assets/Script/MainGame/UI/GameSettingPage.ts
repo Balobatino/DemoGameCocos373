@@ -1,6 +1,7 @@
 import { _decorator, Button, Component, Node } from "cc";
 import { Singleton } from "../../Standard/Singleton";
 import { UIPage } from "../../Standard/UIPage/UIPage";
+import { GameMainPage } from "./GameMainPage";
 const { ccclass, property } = _decorator;
 
 /**
@@ -97,6 +98,20 @@ export class GameSettingPage extends Singleton<GameSettingPage> {
             uiPage.hide();
         } else {
             console.warn("GameSettingPage: UIPage component not found; cannot call hide().");
+        }
+
+        // reopen the main page
+        const gameMainPage = GameMainPage.getInstance<GameMainPage>();
+        if (!gameMainPage) {
+            console.warn("GameMainPage singleton instance not found in Main scene.");
+            return;
+        }
+
+        const mainUiPage = gameMainPage.getUiPage();
+        if (mainUiPage) {
+            mainUiPage.show();
+        } else {
+            console.warn("GameMainPage: UIPage component not found; cannot call show().");
         }
     }
 
