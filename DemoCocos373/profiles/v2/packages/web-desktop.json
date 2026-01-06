@@ -1,0 +1,14 @@
+{
+  "__version__": "1.0.1",
+  "builder": {
+    "common": {
+      "scenes": [
+        {
+          "url": "db://assets/Scene/Splash.scene",
+          "uuid": "8aa11742-3bc1-43c1-8bca-f14089d3d54c",
+          "inBundle": false
+        }
+      ]
+    }
+  }
+}
