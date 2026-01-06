@@ -2,6 +2,7 @@ import { _decorator, Button, Component, Node } from "cc";
 import { Singleton } from "../../Standard/Singleton";
 import { UIPage } from "../../Standard/UIPage/UIPage";
 import { GameSettingPage } from "./GameSettingPage";
+import { GameLevelSelectPage } from "./GameLevelSelectPage";
 const { ccclass, property } = _decorator;
 
 /**
@@ -87,7 +88,27 @@ export class GameMainPage extends Singleton<GameMainPage> {
      * Currently logs a message; actual game start logic to be implemented.
      */
     private onPlayGameButtonClicked(): void {
-        // console.log("Play Game button clicked. Starting game...");
+        // hide the main page
+        const mainUiPage = this.getUiPage();
+        if (mainUiPage) {
+            mainUiPage.hide();
+        } else {
+            console.warn("GameMainPage: UIPage component not found; cannot call hide().");
+        }
+
+        // Open the GameLevelSelectPage UIPage.
+        const levelSelectPage = GameLevelSelectPage.getInstance<GameLevelSelectPage>();
+        if (!levelSelectPage) {
+            console.warn("GameLevelSelectPage singleton instance not found in Main scene.");
+            return;
+        }
+
+        const uiPage = levelSelectPage.getUiPage();
+        if (uiPage) {
+            uiPage.show();
+        } else {
+            console.warn("GameLevelSelectPage: UIPage component not found; cannot call show().");
+        }
     }
 
     /**
