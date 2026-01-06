@@ -1,4 +1,4 @@
-import { _decorator, Component, Button } from "cc";
+import { _decorator, Component, Button, Label } from "cc";
 import { TypedEvent } from "../../../Utils/TypedEvent";
 const { ccclass, property } = _decorator;
 
@@ -18,6 +18,10 @@ export class GameLevelSelectItem extends Component {
     /** Optional Button used to trigger selection. Assign in inspector for clickable UI. */
     @property({ type: Button })
     selectButton: Button | null = null;
+
+    /** Optional Label used to display the human-visible level number (shows index+1). */
+    @property({ type: Label })
+    levelLabel: Label | null = null;
 
     //------------------------------
     // Public events
@@ -41,9 +45,17 @@ export class GameLevelSelectItem extends Component {
     //-----------------------------
     // Public Methods
 
-    /** Set the numeric index representing the level. */
+    /**
+     * Set the numeric index representing the level.
+     * Also updates `levelLabel` text (shows 1-based number) when assigned.
+     */
     public setLevelIndex(index: number): void {
         this.levelIndex = index;
+
+        if (this.levelLabel) {
+            // Display human-friendly 1-based level number
+            this.levelLabel.string = String(index + 1);
+        }
     }
 
     //------------------------------

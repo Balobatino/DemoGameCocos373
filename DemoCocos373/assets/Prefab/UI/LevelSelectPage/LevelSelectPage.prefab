@@ -113,7 +113,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 0,
+      "y": -67.417,
       "z": 0
     },
     "_lrot": {
@@ -651,7 +651,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": -438.626,
+      "y": -457.659,
       "z": 0
     },
     "_lrot": {
@@ -1024,7 +1024,7 @@
     "_left": 0,
     "_right": -22.544999999999987,
     "_top": -19.464,
-    "_bottom": -78.62599999999998,
+    "_bottom": -97.65899999999999,
     "_horizontalCenter": 0,
     "_verticalCenter": 0,
     "_isAbsLeft": true,
@@ -4160,6 +4160,7 @@
       "__id__": 0
     },
     "fileId": "26LibXrj9B6oaWC11dhrfm",
+    "instance": null,
     "targetOverrides": null,
     "nestedPrefabInstanceRoots": [
       {
