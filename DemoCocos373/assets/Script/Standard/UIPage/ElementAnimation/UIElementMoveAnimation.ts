@@ -55,7 +55,11 @@ export class UIElementMoveAnimation extends BaseUIElementAnimation {
     private _activeTween: any = null;
 
     // Capture the node's current position as the default position for offset calculations.
-    onLoad() {
+    // onLoad() {
+
+    // }
+
+    protected start(): void {
         if (!this.node) return;
         const p = this.node.position;
         this.defaultPosition = new Vec2(p.x, p.y);

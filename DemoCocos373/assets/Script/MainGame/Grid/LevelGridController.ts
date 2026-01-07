@@ -41,7 +41,9 @@ export class LevelGridController extends Component {
     private _allCards: GridCardItem[] = [];
 
     // ---------------- Lifecycle ----------------
-    onLoad() {
+    // onLoad() {}
+
+    protected start(): void {
         // Cache initial render area size
         const parentTransform = this.node.getComponent(UITransform);
         if (parentTransform) {
