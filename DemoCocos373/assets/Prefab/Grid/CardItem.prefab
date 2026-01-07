@@ -43,7 +43,7 @@
       }
     ],
     "_prefab": {
-      "__id__": 34
+      "__id__": 37
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -210,7 +210,7 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "e831fe3f-06b8-426c-ac3b-fae2d2a000e6@f9941",
+      "__uuid__": "af334df5-50e5-4bf6-b352-b06bac844840@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 1,
@@ -672,6 +672,15 @@
     "mainButton": {
       "__id__": 32
     },
+    "popUpAnimation": {
+      "__id__": 34
+    },
+    "popDownAnimation": {
+      "__id__": 35
+    },
+    "flipAnimation": {
+      "__id__": 36
+    },
     "_id": ""
   },
   {
@@ -732,6 +741,20 @@
   {
     "__type__": "cc.CompPrefabInfo",
     "fileId": "85e05MWEpAPIhq31GPr4x1"
+  },
+  {
+    "__type__": "PopUpAnimationConfig",
+    "duration": 0.3,
+    "easing": 23
+  },
+  {
+    "__type__": "PopDownAnimationConfig",
+    "duration": 0.15,
+    "easing": 0
+  },
+  {
+    "__type__": "FlipAnimationConfig",
+    "duration": 0.3
   },
   {
     "__type__": "cc.PrefabInfo",
