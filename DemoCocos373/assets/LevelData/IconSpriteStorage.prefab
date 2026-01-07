@@ -24,7 +24,7 @@
       }
     ],
     "_prefab": {
-      "__id__": 6
+      "__id__": 5
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -69,9 +69,6 @@
     "packs": [
       {
         "__id__": 4
-      },
-      {
-        "__id__": 5
       }
     ],
     "_id": ""
@@ -189,10 +186,6 @@
         "__expectedType__": "cc.SpriteFrame"
       }
     ]
-  },
-  {
-    "__type__": "IconPackData",
-    "sprites": []
   },
   {
     "__type__": "cc.PrefabInfo",
