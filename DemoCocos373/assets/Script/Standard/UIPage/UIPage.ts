@@ -71,6 +71,9 @@ export class UIPage extends Component {
     //------ Public Methods
 
     public show(): void {
+        // Reset any pending scheduled callbacks (e.g., a pending hide opacity setter).
+        this.unscheduleAllCallbacks();
+
         // Ensure page is visible immediately by setting node opacity to fully opaque
         // (use cached uiOpacity from onLoad; do not query/add components here).
         this.uiOpacity.opacity = 255;
@@ -85,6 +88,9 @@ export class UIPage extends Component {
     }
 
     public hide(): void {
+        // Reset any pending scheduled callbacks (e.g., a pending hide opacity setter).
+        this.unscheduleAllCallbacks();
+
         // Ensure page is visible during hide animation by setting node opacity to fully opaque
         // (use cached uiOpacity from onLoad; do not query/add components here).
         this.uiOpacity.opacity = 255;
@@ -95,6 +101,16 @@ export class UIPage extends Component {
 
         for (const element of this.uiElements) {
             element.playHideAnimation();
+        }
+
+        // After all hide animations complete, set the page opacity to 0 so the page is fully hidden.
+        const hideDuration = Math.max(0, this.getHideDuration());
+        if (hideDuration === 0) {
+            this.uiOpacity.opacity = 0;
+        } else {
+            this.scheduleOnce(() => {
+                this.uiOpacity.opacity = 0;
+            }, hideDuration);
         }
     }
 
