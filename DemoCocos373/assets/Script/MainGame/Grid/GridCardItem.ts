@@ -158,14 +158,15 @@ export class GridCardItem extends Component {
      * `popUpAnimation` duration and easing. Cancels any running pop-up tween
      * before starting a new one. Starts from scale (0,0) and animates to (1,1).
      * @param onComplete - Optional callback when animation finishes
+     * @param delay - Optional delay (seconds) before the animation begins
      */
-    public playPopUpAnimation(onComplete?: () => void) {
+    public playPopUpAnimation(onComplete?: () => void, delay: number = 0) {
         if (!this.node) return;
 
         // Start from zero scale (invisible) and animate to full size (1,1)
         const z = this.node.scale ? this.node.scale.z : 1;
         this.node.setScale(0, 0, z);
-        this.runScaleTween(this.node, this.popUpAnimation.duration, new Vec3(1, 1, z), EasingMap.get(this.popUpAnimation.easing), onComplete);
+        this.runScaleTween(this.node, this.popUpAnimation.duration, new Vec3(1, 1, z), EasingMap.get(this.popUpAnimation.easing), onComplete, delay);
     }
 
     /**
@@ -272,7 +273,7 @@ export class GridCardItem extends Component {
      * Helper that starts a scale tween on `target`.
      * It sets/clears `_activeTween` and calls `onComplete` when done.
      */
-    private runScaleTween(target: Node, duration: number, toScale: Vec3, easingFunc: (t: number) => number, onComplete?: () => void) {
+    private runScaleTween(target: Node, duration: number, toScale: Vec3, easingFunc: (t: number) => number, onComplete?: () => void, delay: number = 0) {
         if (!target) {
             if (onComplete) onComplete();
             return;
@@ -284,12 +285,16 @@ export class GridCardItem extends Component {
             this._activeTween = null;
         }
 
-        const t = tween(target)
-            .to(duration, { scale: toScale }, { easing: easingFunc })
-            .call(() => {
-                this._activeTween = null;
-                if (onComplete) onComplete();
-            });
+        // Build tween and optionally include a delay before the scale animation
+        let t = tween(target);
+        if (delay > 0) {
+            t = t.delay(delay);
+        }
+
+        t = t.to(duration, { scale: toScale }, { easing: easingFunc }).call(() => {
+            this._activeTween = null;
+            if (onComplete) onComplete();
+        });
 
         this._activeTween = t;
         t.start();

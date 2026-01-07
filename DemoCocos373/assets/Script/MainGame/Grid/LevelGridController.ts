@@ -118,6 +118,9 @@ export class LevelGridController extends Component {
 
         // assign display sprites to cards
         this.assignSpriteToAllCard();
+
+        // run begin pop-out animation
+        void this.playBeginPopOutAnimationForAllCard();
     }
 
     /**
@@ -175,13 +178,6 @@ export class LevelGridController extends Component {
         const totalHeight = size.y * cellSize.height + (size.y - 1) * spacingY;
         // set to parent
         parentTransform.setContentSize(totalWidth, totalHeight);
-        // // Fallback: ensure child sizes match the calculated cell size for compatibility
-        // const parent = layout.node;
-        // for (let i = 0; i < parent.children.length; i++) {
-        //     const child = parent.children[i];
-        //     const childTf = child.getComponent(UITransform);
-        //     if (childTf) childTf.setContentSize(cellSize.width, cellSize.height);
-        // }
 
         // Force an immediate layout rebuild so the changes are visible immediately
         layout.updateLayout();
@@ -191,30 +187,30 @@ export class LevelGridController extends Component {
      * Play pop-out (scale-up) animation for all instantiated cards using configured animation.
      */
     public async playBeginPopOutAnimationForAllCard() {
-        // if (!this._allCards || this._allCards.length === 0) {
-        //     console.warn("PlayBeginPopOutAnimationForAllCard(), no cards available");
-        //     return;
-        // }
-        // const scaleAnimation = this.animationConfig?.scaleUpDown;
-        // if (!scaleAnimation || typeof scaleAnimation.duration !== "number") {
-        //     console.warn("PlayBeginPopOutAnimationForAllCard(), no popOutBegin animation configured");
-        //     return;
-        // }
-        // const RandomDelayMax = 0.5;
-        // for (let n = 0; n < this._allCards.length; n++) {
-        //     const cardItem = this._allCards[n];
-        //     if (!cardItem) continue;
-        //     const delay = Math.random() * RandomDelayMax;
-        //     if (typeof scaleAnimation.playScaleUp === "function") {
-        //         try {
-        //             scaleAnimation.playScaleUp(cardItem, delay);
-        //         } catch (e) {
-        //             // continue silently if play method fails
-        //         }
-        //     }
-        // }
-        // // Wait for the configured animation duration so callers can await completion.
-        // await new Promise((resolve) => setTimeout(resolve, (scaleAnimation.duration + RandomDelayMax) * 1000));
+        if (!this._allCards || this._allCards.length === 0) {
+            console.warn("PlayBeginPopOutAnimationForAllCard(), no cards available");
+            return;
+        }
+
+        // First, set all card scales to zero so they start hidden
+        for (let i = 0; i < this._allCards.length; i++) {
+            const card = this._allCards[i];
+            if (!card || !card.node) continue;
+            const z = card.node.scale ? card.node.scale.z : 1;
+            card.node.setScale(0, 0, z);
+        }
+
+        const RandomDelayMax = 0.5;
+        for (let n = 0; n < this._allCards.length; n++) {
+            const cardItem = this._allCards[n];
+            if (!cardItem) continue;
+            const delay = Math.random() * RandomDelayMax;
+            // Use the new delay parameter on playPopUpAnimation
+            cardItem.playPopUpAnimation(undefined, delay);
+        }
+
+        // Wait a bit so the staggered pop-out can complete; 0.5s is the requested await
+        await new Promise((resolve) => setTimeout(resolve, 500));
     }
 
     /**
@@ -486,20 +482,4 @@ export class LevelGridController extends Component {
         }
         return arr;
     }
-
-    // private waitWithOptionalAbort(ms: number, signal?: AbortSignal): Promise<void> {
-    //     return new Promise((resolve, reject) => {
-    //         if (signal && signal.aborted) return resolve();
-    //         const to = setTimeout(() => {
-    //             if (signal) signal.removeEventListener("abort", onAbort);
-    //             resolve();
-    //         }, ms);
-    //         const onAbort = () => {
-    //             clearTimeout(to);
-    //             signal?.removeEventListener("abort", onAbort);
-    //             resolve();
-    //         };
-    //         if (signal) signal.addEventListener("abort", onAbort);
-    //     });
-    // }
 }
