@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, instantiate, UITransform, Layout, Vec2, Size, SpriteFrame } from "cc";
+import { _decorator, Component, Node, Prefab, instantiate, UITransform, Layout, Vec2, Size, SpriteFrame, isValid } from "cc";
 import { GridCardItem } from "./GridCardItem";
 import { TypedEvent } from "../../Utils/TypedEvent";
 import { IconPackData, IconSpriteStorage } from "../LevelData/IconSpriteStorage";
@@ -384,6 +384,52 @@ export class LevelGridController extends Component {
     // private onParentRectTransformSizeChanged() {
     //     this.adjustGridLayoutToFitCardInRenderArea();
     // }
+
+    /**
+     * Destroy all instantiated card nodes and clear the internal card list.
+     *
+     * Implementation notes:
+     * - Use a pop-based loop to remove items from the *end* of the array which is
+     *   O(1) per removal. This avoids the O(n^2) behavior caused by repeated
+     *   middle/front `splice()` calls and still removes references before calling
+     *   lifecycle methods such as `destroy()` (prevents callbacks from seeing
+     *   partially-destroyed state).
+     * - Prefer cheap guard checks (`node.parent`, `node.isValid`) before calling
+     *   potentially throwing operations (`removeFromParent()`, `destroy()`);
+     *   keep a small try/catch around `destroy()` as a last-resort safety net.
+     */
+    public destroyAllCards(): void {
+        // Guard: nothing to do
+        if (!this._allCards || this._allCards.length === 0) return;
+
+        // Pop from the end which is efficient (O(1)) and immediately removes the
+        // reference from the array before we call lifecycle methods on the node.
+        while (this._allCards.length > 0) {
+            const card = this._allCards.pop();
+            if (!card) continue;
+
+            const node = card.node;
+            // Nothing to do if node reference is missing
+            if (!node) continue;
+
+            // Detach immediately if attached; this is cheap and prevents flicker.
+            if (node.parent) node.removeFromParent();
+
+            // Check node validity using engine helper to avoid calling destroy on
+            // an already-invalid object (prevents potential errors or undefined behavior).
+            if (!isValid(node)) continue;
+
+            try {
+                node.destroy();
+            } catch (e) {
+                // Log the error and continue clearing the rest of the list.
+                console.warn("destroyAllCards(): destroy() threw", e);
+            }
+        }
+
+        // Ensure the array is empty
+        this._allCards.length = 0;
+    }
 
     // ---------------- Helpers ----------------
 

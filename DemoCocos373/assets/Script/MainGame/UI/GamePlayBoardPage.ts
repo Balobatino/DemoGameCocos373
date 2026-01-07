@@ -101,6 +101,11 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
 
     /** Handler for the Back button click event. Hides this page and re-opens the main page. */
     private onBackButtonClicked(): void {
+        // call grid controller to cleanup current level
+        if (this.levelGridController) {
+            this.levelGridController.destroyAllCards();
+        }
+        // Hide this page
         const uiPage = this.getUiPage();
         if (uiPage) {
             uiPage.hide();
