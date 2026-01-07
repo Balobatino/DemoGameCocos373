@@ -216,13 +216,17 @@ export class LevelGridController extends Component {
      */
     public assignSpriteToAllCard() {
         // temp for now
-        return;
+        // return;
         if (!this._allCards || this._allCards.length === 0) {
             console.warn("AssignSpriteToAllCard(), no cards available to assign sprites");
             return;
         }
 
-        const storage = this.levelStoragePrefab.data.getComponent(IconSpriteStorage);
+        const storage = this.iconStoragePrefab.data.getComponent(IconSpriteStorage);
+        if (!storage) {
+            console.error("AssignSpriteToAllCard(), IconSpriteStorage component missing from prefab.");
+            return;
+        }
         const pack = storage.getRandomPack() as IconPackData | null;
         if (!pack) {
             console.error("AssignSpriteToAllCard(), no icon pack returned");
@@ -434,6 +438,9 @@ export class LevelGridController extends Component {
     // ---------------- Helpers ----------------
 
     private onCardItemSelected(item: GridCardItem) {
+        // log the grid position for debug
+        // const pos = item.gridPosition;
+        // console.log(`LevelGridController: Card selected at grid position (${pos.x}, ${pos.y})`);
         this.onCardItemButtonClickedHandler.invoke(item);
     }
 
