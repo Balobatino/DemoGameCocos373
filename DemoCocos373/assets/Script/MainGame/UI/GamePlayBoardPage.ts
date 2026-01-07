@@ -3,6 +3,7 @@ import { Singleton } from "../../Standard/Singleton";
 import { UIPage } from "../../Standard/UIPage/UIPage";
 import { GameMainPage } from "./GameMainPage";
 import { LevelGridController } from "../Grid/LevelGridController";
+import { GameLevelSelectPage } from "./GameLevelSelectPage";
 const { ccclass, property } = _decorator;
 
 /**
@@ -114,17 +115,17 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
         }
 
         // Reopen the main page
-        const gameMainPage = GameMainPage.getInstance<GameMainPage>();
-        if (!gameMainPage) {
-            console.warn("GameMainPage singleton instance not found in Main scene.");
+        const levelSelectPage = GameLevelSelectPage.getInstance<GameLevelSelectPage>();
+        if (!levelSelectPage) {
+            console.warn("GameLevelSelectPage singleton instance not found in Main scene.");
             return;
         }
 
-        const mainUiPage = gameMainPage.getUiPage();
+        const mainUiPage = levelSelectPage.getUiPage();
         if (mainUiPage) {
             mainUiPage.show();
         } else {
-            console.warn("GameMainPage: UIPage component not found; cannot call show().");
+            console.warn("GameLevelSelectPage: UIPage component not found; cannot call show().");
         }
     }
 
