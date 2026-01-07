@@ -24,6 +24,9 @@ export class LevelGridController extends Component {
     @property({ type: Prefab })
     public iconStoragePrefab: Prefab | null = null;
 
+    @property({ type: Layout })
+    public gridLayout: Layout | null = null;
+
     // /** Animation config is project-specific; keep as `any` and guard its usage at runtime. */
     // @property({ type: Object })
     // public animationConfig: any = null;
@@ -33,11 +36,20 @@ export class LevelGridController extends Component {
     public readonly onCardItemButtonClickedHandler = new TypedEvent<GridCardItem>();
 
     // ---------------- Private state ----------------
+    private _initGridRenderAreaSize: Size | null = null;
     private _currentLevelSize: Vec2 = new Vec2(0, 0);
     private _allCards: GridCardItem[] = [];
 
     // ---------------- Lifecycle ----------------
-    onLoad() {}
+    onLoad() {
+        // Cache initial render area size
+        const parentTransform = this.node.getComponent(UITransform);
+        if (parentTransform) {
+            this._initGridRenderAreaSize = parentTransform.contentSize.clone();
+        } else {
+            console.warn("LevelGridController: Missing UITransform on grid render area node.");
+        }
+    }
 
     // ---------------- Public API ----------------
     /**
@@ -100,7 +112,7 @@ export class LevelGridController extends Component {
         }
 
         // Layout and sizing
-        this.adjustGridLayoutToFitCardInRenderArea();
+        this.adjustGridLayoutToFitCardInRenderArea(this._currentLevelSize);
 
         // assign display sprites to cards
         this.assignSpriteToAllCard();
@@ -110,49 +122,66 @@ export class LevelGridController extends Component {
      * Adjust the Layout spacing and child sizes to fit the configured render area.
      * 90% of each cell is used as the cellSize, and 10% used as spacing.
      */
-    public adjustGridLayoutToFitCardInRenderArea() {
-        // if (!this.parentTransform || !this.gridLayout) {
-        //     console.error("AdjustGridLayoutToFitCardInRenderArea(), missing UI references");
-        //     return;
-        // }
-        // const parentTransform = this.parentTransform.getComponent(UITransform);
-        // if (!parentTransform) {
-        //     console.error("AdjustGridLayoutToFitCardInRenderArea(), parentTransform missing UITransform");
-        //     return;
-        // }
-        // const parentSize = parentTransform.contentSize;
-        // if (parentSize.width <= 0 || parentSize.height <= 0) {
-        //     console.error("AdjustGridLayoutToFitCardInRenderArea(), render area has invalid size");
-        //     return;
-        // }
-        // const cellW = parentSize.width / this._currentLevelSize.x;
-        // const cellH = parentSize.height / this._currentLevelSize.y;
-        // const edge = Math.min(cellW, cellH);
-        // const usableEdge = edge * 0.9; // 90% used by the cell
-        // const cellSize = new Size(usableEdge, usableEdge);
-        // const spacingX = edge * 0.1;
-        // const spacingY = edge * 0.1;
-        // // calc parent size to fit exactly the grid, and set to rootItem parent
-        // if (this.rootItem) {
-        //     const rootTf = this.rootItem.getComponent(UITransform);
-        //     if (rootTf) {
-        //         rootTf.setContentSize(this._currentLevelSize.x * (cellSize.width + spacingX) - spacingX, this._currentLevelSize.y * (cellSize.height + spacingY) - spacingY);
-        //     }
-        // }
-        // // set new values (Layout spacing)
-        // const layout = this.gridLayout;
-        // layout.spacingX = spacingX;
-        // layout.spacingY = spacingY;
-        // // set child sizes to match calculated cell size
+    /**
+     * Adjust the Layout spacing and child sizes to fit the configured render area.
+     * Translated from the C# implementation but *does not* modify the render area's
+     * size (preserve the container). `levelSize` is optional and falls back to
+     * the cached `_currentLevelSize` when not provided.
+     */
+    public adjustGridLayoutToFitCardInRenderArea(levelSize?: Vec2) {
+        // Basic config checks (equivalent of isFailedConfig)
+        if (!this.gridLayout) {
+            console.error("AdjustGridLayoutToFitCardInRenderArea(), missing gridLayout reference");
+            return;
+        }
+
+        const size = levelSize ?? this._currentLevelSize;
+        if (!size || size.x <= 0 || size.y <= 0) {
+            console.error("AdjustGridLayoutToFitCardInRenderArea(), invalid level size");
+            return;
+        }
+
+        const parentTransform = this.node.getComponent(UITransform);
+        if (!parentTransform) {
+            console.error("AdjustGridLayoutToFitCardInRenderArea(), missing UITransform on render area");
+            return;
+        }
+
+        // log parent size
+        console.log(`AdjustGridLayoutToFitCardInRenderArea(), render area size: ${this._initGridRenderAreaSize.width} x ${this._initGridRenderAreaSize.height}`);
+
+        // compute cell and spacing similar to the C# logic
+        const cellW = this._initGridRenderAreaSize.width / size.x;
+        const cellH = this._initGridRenderAreaSize.height / size.y;
+        const edge = Math.min(cellW, cellH);
+        const usableEdge = edge * 0.9; // 90% used by the cell
+        const cellSize = new Size(usableEdge, usableEdge);
+        console.log(`AdjustGridLayoutToFitCardInRenderArea(), calculated cell size: ${cellSize.width} x ${cellSize.height}`);
+
+        const spacingX = edge * 0.1;
+        const spacingY = edge * 0.1;
+        console.log(`AdjustGridLayoutToFitCardInRenderArea(), calculated spacing: ${spacingX} x ${spacingY}`);
+
+        const layout = this.gridLayout;
+        layout.cellSize = cellSize;
+        layout.spacingX = spacingX;
+        layout.spacingY = spacingY;
+
+        // calculate the required size of the parent to fit the grid exactly
+        const totalWidth = size.x * cellSize.width + (size.x - 1) * spacingX;
+        const totalHeight = size.y * cellSize.height + (size.y - 1) * spacingY;
+        // set to parent
+        parentTransform.setContentSize(totalWidth, totalHeight);
+        // // Fallback: ensure child sizes match the calculated cell size for compatibility
         // const parent = layout.node;
         // for (let i = 0; i < parent.children.length; i++) {
         //     const child = parent.children[i];
         //     const childTf = child.getComponent(UITransform);
         //     if (childTf) childTf.setContentSize(cellSize.width, cellSize.height);
         // }
-        // // Force layout update so the changes are visible immediately
-        // // `updateLayout` is a public API on Layout component
-        // layout.updateLayout();
+
+        // Force an immediate layout rebuild so the changes are visible immediately
+        layout.updateLayout();
     }
 
     /**
@@ -246,7 +275,6 @@ export class LevelGridController extends Component {
         }
 
         const randomCardIndex = this.createShuffledIntegerIndexList(this._allCards.length);
-
         // assign sprites by taking two cards at a time
         while (randomCardIndex.length >= 2) {
             const cardIndexA = randomCardIndex.pop() as number;
