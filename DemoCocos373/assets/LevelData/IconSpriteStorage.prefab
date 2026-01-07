@@ -24,7 +24,7 @@
       }
     ],
     "_prefab": {
-      "__id__": 4
+      "__id__": 6
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -66,12 +66,133 @@
     "__prefab": {
       "__id__": 3
     },
-    "packs": [],
+    "packs": [
+      {
+        "__id__": 4
+      },
+      {
+        "__id__": 5
+      }
+    ],
     "_id": ""
   },
   {
     "__type__": "cc.CompPrefabInfo",
     "fileId": "55xbhiXL1BnbxsvQqxAgNP"
+  },
+  {
+    "__type__": "IconPackData",
+    "packName": "Food",
+    "sprites": [
+      {
+        "__uuid__": "6886b38a-d967-4616-b028-c882f7c2e055@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "f52d5bac-1e39-4875-b671-305d50f4c4d1@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "875e83cd-fa0f-4db2-8c87-35930f9b95ec@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "02443e3d-f14f-44a2-a508-eb4d567c6f86@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "da1f2b7f-7426-429e-8043-af6fa9b742ef@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "84fad723-4c10-4306-83c3-23f6f525de84@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "d19a50fb-ca8f-4c1f-8fd1-9d5b960f1b25@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "3914f544-1865-4df4-8021-c5a6b78389bf@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "3160c515-e16b-48fa-8460-4700c05f7cdf@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "92e636bc-246f-4aaa-95e7-337db0321013@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "d3cc72a8-82e8-441c-89e8-589d4580de5e@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "b609cf9d-7b62-453e-83fc-a565713e8453@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "e63c9830-3636-4a02-a9cd-b0e2e4ae56de@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "4d9cea2d-3dfc-4c54-b929-237a846359ef@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "195bde35-92fb-46ae-9a41-99b921ef56cb@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "b3f4e3c2-1035-4cf1-b447-d48a822bf862@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "73f62fc3-e159-470b-a49d-f4f44cab6cdd@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "d8318fd6-0cd1-494e-853e-b37b09292539@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "8eff5a73-42f4-4c28-8cb3-591ea593322c@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "81eadb96-9140-459f-bb7a-7dbc2cf6dd9c@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "25572534-f8a8-4632-b85b-c75398e56e7a@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "30361579-d86f-4af5-948d-61222087d34e@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "4fd0053a-679a-4a3c-b919-9a4c3e09183a@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "4c1e9161-c056-4378-9e91-b630ceb08de8@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "99873adb-e20f-4b0e-a798-34263845187f@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "87521d34-1f31-482a-98f8-8ef65986e2cd@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      }
+    ]
+  },
+  {
+    "__type__": "IconPackData",
+    "sprites": []
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -82,6 +203,7 @@
       "__id__": 0
     },
     "fileId": "63Wm2rnc9N2rFbcsoYTqAt",
+    "instance": null,
     "targetOverrides": null
   }
 ]
