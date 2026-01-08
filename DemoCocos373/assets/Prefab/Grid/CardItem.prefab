@@ -761,7 +761,7 @@
   },
   {
     "__type__": "FlipAnimationConfig",
-    "duration": 0.3
+    "duration": 0.2
   },
   {
     "__type__": "cc.PrefabInfo",
