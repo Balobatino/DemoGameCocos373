@@ -740,7 +740,7 @@
     ],
     "value": {
       "__type__": "cc.Size",
-      "width": 720.2,
+      "width": 720.8,
       "height": 1280
     }
   },
@@ -2490,7 +2490,7 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "_opacity": 255,
+    "_opacity": 0,
     "_id": "bb7P+YDPJBo558rtpcM1RX"
   },
   {
