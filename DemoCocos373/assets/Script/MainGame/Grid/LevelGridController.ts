@@ -30,6 +30,21 @@ class Data {
  * - layout and instantiate grid cells for a level data
  * - adapt Layout spacing and child sizes to fit the render area
  */
+@ccclass("LevelGridControllerUIReference")
+class UIReference {
+    @property({ type: Layout })
+    public gridLayout: Layout | null = null;
+}
+
+/**
+ * LevelGridController: Manages the level grid UI, including loading levels,
+ * instantiating card items, adjusting layout, and handling card interactions.
+ * Responsibilities:
+ * - load level data and instantiate card items
+ * - adjust grid layout to fit the render area
+ * - assign sprites to cards from icon packs
+ * - handle card selection events
+ */
 @ccclass("LevelGridController")
 export class LevelGridController extends Component {
     // ---------------- Inspector fields ----------------
@@ -39,8 +54,8 @@ export class LevelGridController extends Component {
     @property({ type: Data })
     public data: Data = new Data();
 
-    @property({ type: Layout })
-    public gridLayout: Layout | null = null;
+    @property({ type: UIReference })
+    public uiRef: UIReference = new UIReference();
 
     // /** Animation config is project-specific; keep as `any` and guard its usage at runtime. */
     // @property({ type: Object })
@@ -73,7 +88,7 @@ export class LevelGridController extends Component {
      * Load a level by index: clear current grid and instantiate card items based on LevelStorage LevelData.
      */
     public loadLevel(levelIndex: number) {
-        if (!this.data || !this.data.levelStoragePrefab) {
+        if (!this.data.levelStoragePrefab) {
             console.error("LoadLevel(), LevelStorage prefab is null");
             return;
         }
@@ -150,7 +165,7 @@ export class LevelGridController extends Component {
      */
     public adjustGridLayoutToFitCardInRenderArea(levelSize?: Vec2) {
         // Basic config checks (equivalent of isFailedConfig)
-        if (!this.gridLayout) {
+        if (!this.uiRef.gridLayout) {
             console.error("AdjustGridLayoutToFitCardInRenderArea(), missing gridLayout reference");
             return;
         }
@@ -183,7 +198,7 @@ export class LevelGridController extends Component {
         const spacingY = edge * 0.09;
         console.log(`AdjustGridLayoutToFitCardInRenderArea(), calculated spacing: ${spacingX} x ${spacingY}`);
 
-        const layout = this.gridLayout;
+        const layout = this.uiRef.gridLayout as Layout;
         layout.cellSize = cellSize;
         layout.spacingX = spacingX;
         layout.spacingY = spacingY;
@@ -265,7 +280,7 @@ export class LevelGridController extends Component {
             return;
         }
 
-        if (!this.data || !this.data.iconStoragePrefab) {
+        if (!this.data.iconStoragePrefab) {
             console.error("AssignSpriteToAllCard(), IconStorage prefab is not set.");
             return;
         }
