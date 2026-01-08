@@ -61,10 +61,6 @@ export class LevelGridController extends Component {
     @property({ type: UIReference })
     public uiRef: UIReference = new UIReference();
 
-    // /** Animation config is project-specific; keep as `any` and guard its usage at runtime. */
-    // @property({ type: Object })
-    // public animationConfig: any = null;
-
     // ---------------- Public events ----------------
     /** Event triggered when a card item is clicked */
     public readonly onCardItemButtonClickedHandler = new TypedEvent<GridCardItem>();
@@ -138,7 +134,6 @@ export class LevelGridController extends Component {
             for (let col = 0; col < this._currentLevelSize.x; col++) {
                 const card = instantiate(this.data.cardItemPrefab);
                 rootItem.addChild(card);
-                // card.setScale(1, 1, 1);
 
                 // If prefab includes GridCardItem, configure it
                 const cardComponent = card.getComponent(GridCardItem) as GridCardItem | null;
@@ -151,7 +146,7 @@ export class LevelGridController extends Component {
                 cardComponent.activeBackFace(true);
                 this._allCards.push(cardComponent);
                 // register button click callback
-                cardComponent.onSelected.add((it) => this.onCardItemSelected(it));
+                cardComponent.onSelected.add((it) => this.onCardItemClicked(it));
             }
         }
 
@@ -240,11 +235,13 @@ export class LevelGridController extends Component {
         }
 
         // First, set all card scales to zero so they start hidden
+        // and active front face
         for (let i = 0; i < this._allCards.length; i++) {
             const card = this._allCards[i];
             if (!card || !card.node) continue;
             const z = card.node.scale ? card.node.scale.z : 1;
             card.node.setScale(0, 0, z);
+            card.activeBackFace(false);
         }
 
         const RandomDelayMax = 0.5;
@@ -476,37 +473,6 @@ export class LevelGridController extends Component {
         // this._allCards.length = 0;
     }
 
-    // // ---------------- Parent size change handling ----------------
-    // public startListenToParentDimensionChange() {
-    //     const parent = this.parentTransform;
-    //     if (!parent) return;
-    //     // Try to find a size-change detector component and subscribe to it if available.
-    //     const detector: any = parent.getComponent("RectTransformSizeChangeDetector");
-    //     if (!detector) {
-    //         console.warn("StartListenToParentDimensionChange(), no RectTransformSizeChangeDetector found.");
-    //         return;
-    //     }
-    //     // prevent multiple subscriptions
-    //     if (detector.OnDeimensionChangedHandler && typeof detector.OnDeimensionChangedHandler.remove === "function") {
-    //         detector.OnDeimensionChangedHandler.remove(this.onParentRectTransformSizeChanged, this);
-    //         detector.OnDeimensionChangedHandler.add(this.onParentRectTransformSizeChanged, this);
-    //     }
-    // }
-
-    // public stopListenToParentDimensionChange() {
-    //     const parent = this.parentTransform;
-    //     if (!parent) return;
-    //     const detector: any = parent.getComponent("RectTransformSizeChangeDetector");
-    //     if (!detector) return;
-    //     if (detector.OnDeimensionChangedHandler && typeof detector.OnDeimensionChangedHandler.remove === "function") {
-    //         detector.OnDeimensionChangedHandler.remove(this.onParentRectTransformSizeChanged, this);
-    //     }
-    // }
-
-    // private onParentRectTransformSizeChanged() {
-    //     this.adjustGridLayoutToFitCardInRenderArea();
-    // }
-
     /**
      * Destroy all instantiated card nodes and clear the internal card list.
      *
@@ -553,15 +519,18 @@ export class LevelGridController extends Component {
         this._allCards.length = 0;
     }
 
-    // ---------------- Helpers ----------------
+    // -----------------------------------------
+    // Card click handler
 
-    private onCardItemSelected(item: GridCardItem) {
+    private onCardItemClicked(item: GridCardItem) {
         // log the grid position for debug
         // const pos = item.gridPosition;
         // console.log(`LevelGridController: Card selected at grid position (${pos.x}, ${pos.y})`);
         this.onCardItemButtonClickedHandler.invoke(item);
     }
 
+    // -----------------------------------------
+    // ---------------- Helpers ----------------
     private createShuffledIntegerIndexList(count: number): number[] {
         const arr: number[] = [];
         for (let i = 0; i < count; i++) arr.push(i);

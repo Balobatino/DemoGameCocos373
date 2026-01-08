@@ -4,6 +4,7 @@ import { UIPage } from "../../Standard/UIPage/UIPage";
 import { GameMainPage } from "./GameMainPage";
 import { LevelGridController } from "../Grid/LevelGridController";
 import { GameLevelSelectPage } from "./GameLevelSelectPage";
+import { GridCardItem } from "../Grid/GridCardItem";
 const { ccclass, property } = _decorator;
 
 /**
@@ -77,6 +78,8 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
 
         // schedule a one-shot callback after the show animation duration
         (this as any).scheduleOnce(() => {
+            // reset data before loading new level
+            this.resetDataBeforeNewMatch();
             grid.loadLevel(levelIndex);
         }, delay);
     }
@@ -106,6 +109,14 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
             backBtn.node.on(Button.EventType.CLICK, this.onBackButtonClicked, this);
         } else {
             console.warn("GamePlayBoardPage: backButton is not assigned in the inspector (uiRef.backButton).");
+        }
+
+        // Subscribe to card selection events from the LevelGridController
+        const grid = this.uiRef.levelGridController;
+        if (grid) {
+            grid.onCardItemButtonClickedHandler.add(this.onGridCardItemSelected);
+        } else {
+            console.warn("GamePlayBoardPage: levelGridController not assigned; cannot subscribe to card selection events.");
         }
     }
 
@@ -146,5 +157,154 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
         if (backBtn) {
             backBtn.node.off(Button.EventType.CLICK, this.onBackButtonClicked, this);
         }
+
+        // Unsubscribe from grid card click events
+        const grid = this.uiRef.levelGridController;
+        if (grid) {
+            grid.onCardItemButtonClickedHandler.remove(this.onGridCardItemSelected);
+        }
+    }
+
+    //-----------------------------------
+    //--- Game Logic for Card Matching
+
+    private _firstSelectedCard: GridCardItem | null = null;
+    private _secondSelectedCard: GridCardItem | null = null;
+
+    // Grid card click handler (arrow function to preserve `this` when used as listener)
+    private onGridCardItemSelected = (cardItem: GridCardItem): void => {
+        if (!cardItem) {
+            console.warn("GamePlayBoardPage: onGridCardItemSelected called with null/undefined item.");
+            return;
+        }
+
+        // console.log(`GamePlayBoardPage: onGridCardItemSelected: grid pos ${cardItem.gridPosition.x}, ${cardItem.gridPosition.y}`);
+
+        // both cards are null, set first selected card, simple reveal first card, wait for second selection
+        if (this._firstSelectedCard == null && this._secondSelectedCard == null) {
+            this._firstSelectedCard = cardItem;
+            // disable interaction on selected card, so user can't click it again
+            cardItem.setActiveInteraction(false);
+            // flip card to reveal (GridCardItem handles animation)
+            cardItem.playFlipBackToFrontAnimation();
+            // TODO: play flip audio
+            return;
+        }
+
+        // first card is selected, second is null, then perform matching check
+        if (this._firstSelectedCard != null && this._secondSelectedCard == null) {
+            this._secondSelectedCard = cardItem;
+            // disable interaction on selected card, so user can't click it again
+            cardItem.setActiveInteraction(false);
+            // check matching asynchronously
+            void this.checkMatchingForTwoSelectedCards();
+            return;
+        }
+
+        // if both already set, ignore further clicks until evaluation completes
+    };
+
+    private async checkMatchingForTwoSelectedCards(): Promise<void> {
+        if (!this._firstSelectedCard || !this._secondSelectedCard) {
+            console.warn("GamePlayBoardPage: checkMatchingForTwoSelectedCards called with null selections.");
+            return;
+        }
+
+        // Play flip for second card and flip audio
+        // TODO: play flip audio
+        this._secondSelectedCard.playFlipBackToFrontAnimation();
+
+        // Wait for flip animation to finish (duration from GridCardItem.flipAnimation)
+        const flipDuration = this._firstSelectedCard.flipAnimation.duration;
+        await new Promise((res) => setTimeout(res, Math.floor(flipDuration * 1000)));
+
+        // Compare sprites
+        if (this._firstSelectedCard.isSameSpriteToCard(this._secondSelectedCard)) {
+            await this.onMatchingSuccess(this._firstSelectedCard, this._secondSelectedCard);
+        } else {
+            await this.onMatchingFail(this._firstSelectedCard, this._secondSelectedCard);
+        }
+    }
+
+    private async onMatchingSuccess(item1: GridCardItem, item2: GridCardItem): Promise<void> {
+        // TODO: play match success audio
+        console.log("GamePlayBoardPage: Matching success");
+
+        // TODO: update combo bar
+
+        // Update scoring and UI (placeholders, implement when game data exists)
+        this.updateScoreForSuccessMatching();
+        // TODO: update UI for success matching (update score, turns, matches)
+
+        // reset selected refs , so it won't affect matching logic later when user click other cards during animation
+        this._firstSelectedCard = null;
+        this._secondSelectedCard = null;
+
+        // play scale down / disappear animation for matched cards
+        item1.playPopDownAnimation();
+        item2.playPopDownAnimation();
+        const duration = Math.max(item1.popDownAnimation?.duration ?? 0.15, item2.popDownAnimation?.duration ?? 0.15);
+        await new Promise((res) => setTimeout(res, Math.floor(duration * 1000)));
+
+        // TODO: play SFX/VFX for matched cards disappear
+
+        // Check win condition (placeholder)
+        if (this.isLevelClear()) {
+            await this.onLevelCleared();
+        }
+    }
+
+    private async onMatchingFail(item1: GridCardItem, item2: GridCardItem): Promise<void> {
+        // TODO: play match fail audio (e.g. audioData.matchFailAudioCommand.Execute())
+        console.log("GamePlayBoardPage: Matching fail");
+
+        // Update stats and UI (placeholders)
+        this.updateStatsForFailedMatching();
+        // TODO: update UI for failed matching (turn count)
+
+        // TODO: reset combo bar / cooldown: this.uiRef.comboBar?.onUserMatchingFailed();
+
+        // play flip back animations concurrently
+        item1.playFlipFrontToBackAnimation();
+        item2.playFlipFrontToBackAnimation();
+
+        // reset selections
+        this._firstSelectedCard = null;
+        this._secondSelectedCard = null;
+
+        // wait for flip animation to finish before re-enable interaction
+        const flipDuration = item1.flipAnimation.duration;
+        await new Promise((res) => setTimeout(res, Math.floor(flipDuration * 1000)));
+        item1.setActiveInteraction(true);
+        item2.setActiveInteraction(true);
+    }
+
+    private resetDataBeforeNewMatch(): void {
+        this._firstSelectedCard = null;
+        this._secondSelectedCard = null;
+    }
+
+    private updateScoreForSuccessMatching(): void {
+        // TODO: Implement scoring using game data
+    }
+
+    private updateStatsForFailedMatching(): void {
+        // TODO: Increment turn count in game stats,
+    }
+
+    private isLevelClear(): boolean {
+        // TODO: implement proper level clear logic using gameStats and level storage
+        const grid = this.uiRef.levelGridController;
+        if (!grid) {
+            console.warn("GamePlayBoardPage.isLevelClear(): grid controller not assigned; cannot determine level clear.");
+            return false;
+        }
+        return false;
+    }
+
+    private async onLevelCleared(): Promise<void> {
+        // TODO: show level cleared UI, SFX, VFX and save score
+        console.log("GamePlayBoardPage.onLevelCleared(): TODO - show win UI and handle level clear flow.");
+        // await new Promise((res) => setTimeout(res, 0));
     }
 }
