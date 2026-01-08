@@ -7,6 +7,18 @@ import { GameLevelSelectPage } from "./GameLevelSelectPage";
 const { ccclass, property } = _decorator;
 
 /**
+ * Inspector group for UI references used by GamePlayBoardPage.
+ */
+@ccclass("GamePlayBoardPageUIReference")
+class UIReference {
+    @property({ type: Button })
+    public backButton: Button | null = null;
+
+    @property({ type: LevelGridController })
+    public levelGridController: LevelGridController | null = null;
+}
+
+/**
  * GamePlayBoardPage: Singleton that manages the gameplay board UI page.
  * Responsibilities:
  * - expose and provide access to the LevelGridController used by gameplay
@@ -15,14 +27,9 @@ const { ccclass, property } = _decorator;
 @ccclass("GamePlayBoardPage")
 export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
     //------------------------------
-    //---- expose properties
-    /** Back button that returns to the main page. Assign in inspector. */
-    @property({ type: Button })
-    backButton: Button | null = null;
-
-    /** Controller for the level grid used on this page. Assign in inspector. */
-    @property({ type: LevelGridController })
-    levelGridController: LevelGridController | null = null;
+    //---- Inspector grouped UI references
+    @property({ type: UIReference })
+    public uiRef: UIReference = new UIReference();
 
     //------------------------------
     //--- Private Properties
@@ -45,7 +52,7 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
 
     /** Return the assigned LevelGridController instance, or null when not assigned. */
     public getLevelGridController(): LevelGridController | null {
-        return this.levelGridController;
+        return this.uiRef.levelGridController;
     }
 
     /**
@@ -62,14 +69,15 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
         uiPage.show();
         const delay = uiPage.getShowDuration ? uiPage.getShowDuration() : 0;
 
-        if (!this.levelGridController) {
+        const grid = this.uiRef.levelGridController;
+        if (!grid) {
             console.warn("GamePlayBoardPage: levelGridController not assigned; cannot load level.");
             return;
         }
 
         // schedule a one-shot callback after the show animation duration
         (this as any).scheduleOnce(() => {
-            this.levelGridController!.loadLevel(levelIndex);
+            grid.loadLevel(levelIndex);
         }, delay);
     }
 
@@ -93,18 +101,20 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
 
     private registerButtonHandlers(): void {
         // Back button
-        if (this.backButton) {
-            this.backButton.node.on(Button.EventType.CLICK, this.onBackButtonClicked, this);
+        const backBtn = this.uiRef.backButton;
+        if (backBtn) {
+            backBtn.node.on(Button.EventType.CLICK, this.onBackButtonClicked, this);
         } else {
-            console.warn("GamePlayBoardPage: backButton is not assigned in the inspector.");
+            console.warn("GamePlayBoardPage: backButton is not assigned in the inspector (uiRef.backButton).");
         }
     }
 
     /** Handler for the Back button click event. Hides this page and re-opens the main page. */
     private onBackButtonClicked(): void {
         // call grid controller to cleanup current level
-        if (this.levelGridController) {
-            this.levelGridController.destroyAllCards();
+        const grid = this.uiRef.levelGridController;
+        if (grid) {
+            grid.destroyAllCards();
         }
         // Hide this page
         const uiPage = this.getUiPage();
@@ -132,8 +142,9 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
     //------------------------------
     //--- Cleanup
     protected onDestroy(): void {
-        if (this.backButton) {
-            this.backButton.node.off(Button.EventType.CLICK, this.onBackButtonClicked, this);
+        const backBtn = this.uiRef.backButton;
+        if (backBtn) {
+            backBtn.node.off(Button.EventType.CLICK, this.onBackButtonClicked, this);
         }
     }
 }

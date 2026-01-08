@@ -27,7 +27,7 @@
     "_active": true,
     "_components": [],
     "_prefab": {
-      "__id__": 100
+      "__id__": 101
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -58,7 +58,7 @@
     },
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 101
+      "__id__": 102
     },
     "_id": "d7bd504a-34f6-4c4c-ae0a-41379c53c7d3"
   },
@@ -234,13 +234,13 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 97
-      },
-      {
         "__id__": 98
       },
       {
         "__id__": 99
+      },
+      {
+        "__id__": 100
       }
     ],
     "_prefab": null,
@@ -1078,10 +1078,10 @@
         "__id__": 94
       },
       {
-        "__id__": 95
+        "__id__": 96
       },
       {
-        "__id__": 96
+        "__id__": 97
       }
     ],
     "_prefab": null,
@@ -1116,7 +1116,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Grid",
+    "_name": "GridController",
     "_objFlags": 0,
     "_parent": {
       "__id__": 52
@@ -2467,13 +2467,19 @@
     },
     "_enabled": true,
     "__prefab": null,
+    "uiRef": {
+      "__id__": 95
+    },
+    "_id": "8eax5WB0JOn74e+ysdTwjm"
+  },
+  {
+    "__type__": "GamePlayBoardPageUIReference",
     "backButton": {
       "__id__": 75
     },
     "levelGridController": {
       "__id__": 57
-    },
-    "_id": "8eax5WB0JOn74e+ysdTwjm"
+    }
   },
   {
     "__type__": "cc.UIOpacity",
@@ -2587,22 +2593,22 @@
   {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 102
-    },
-    "shadows": {
       "__id__": 103
     },
-    "_skybox": {
+    "shadows": {
       "__id__": 104
     },
-    "fog": {
+    "_skybox": {
       "__id__": 105
     },
-    "octree": {
+    "fog": {
       "__id__": 106
     },
-    "lightProbeInfo": {
+    "octree": {
       "__id__": 107
+    },
+    "lightProbeInfo": {
+      "__id__": 108
     },
     "bakedWithStationaryMainLight": false,
     "bakedWithHighpLightmap": false
