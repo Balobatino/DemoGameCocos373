@@ -38,9 +38,6 @@ class UIReference {
     @property({ type: Node })
     public rootFrontFace: Node | null = null;
 
-    @property({ type: Node })
-    public displayCardNode: Node | null = null;
-
     @property({ type: Sprite })
     public displayCardSprite: Sprite | null = null;
 
@@ -75,12 +72,6 @@ export class GridCardItem extends Component {
     public flipAnimation: FlipAnimationConfig = new FlipAnimationConfig();
 
     //------------------------------
-    //--- Private Properties
-
-    // Track active tween for pop-up/pop-down animations so it can be cancelled/replaced
-    private _activeTween: any = null;
-
-    //------------------------------
     // Public events
     public readonly onSelected = new TypedEvent<GridCardItem>();
 
@@ -89,6 +80,8 @@ export class GridCardItem extends Component {
 
     private gridPositionData = new Vec2();
     private displaySpriteData: SpriteFrame | null = null;
+    // Track active tween for pop-up/pop-down animations so it can be cancelled/replaced
+    private activeTween: any = null;
 
     onLoad() {
         // Register click handler for configured button.
@@ -172,6 +165,11 @@ export class GridCardItem extends Component {
      */
     public playPopUpAnimation(onComplete?: () => void, delay: number = 0) {
         if (!this.node) return;
+        // // Cancel any previous tween so a new one may take over
+        // if (this.activeTween) {
+        //     this.activeTween.stop();
+        //     this.activeTween = null;
+        // }
 
         // Start from zero scale (invisible) and animate to full size (1,1)
         const z = this.node.scale ? this.node.scale.z : 1;
@@ -187,6 +185,11 @@ export class GridCardItem extends Component {
      */
     public playPopDownAnimation(onComplete?: () => void) {
         if (!this.node) return;
+        // // Cancel any previous tween so a new one may take over
+        // if (this.activeTween) {
+        //     this.activeTween.stop();
+        //     this.activeTween = null;
+        // }
 
         const z = this.node.scale ? this.node.scale.z : 1;
         this.node.setScale(1, 1, z);
@@ -206,13 +209,14 @@ export class GridCardItem extends Component {
     public playFlipBackToFrontAnimation(onComplete?: () => void) {
         if (!this.node) return;
 
-        if (this._activeTween) {
-            this._activeTween.stop();
-            this._activeTween = null;
-        }
+        // if (this.activeTween) {
+        //     this.activeTween.stop();
+        //     this.activeTween = null;
+        // }
 
         // Require all flip-related nodes to be present
-        if (!this.uiRef.rootBackFace || !this.uiRef.rootFrontFace || !this.uiRef.displayCardNode) {
+        // if (!this.uiRef.rootBackFace || !this.uiRef.rootFrontFace || !this.uiRef.displayCardNode) {
+        if (!this.uiRef.rootBackFace || !this.uiRef.rootFrontFace) {
             console.warn("GridCardItem: Missing flip nodes (rootBackFace, rootFrontFace, displayCardNode); cannot perform playFlipBackToFrontAnimation.");
             if (onComplete) onComplete();
             return;
@@ -224,8 +228,6 @@ export class GridCardItem extends Component {
         // hide front and display items immediately (non-null asserted after earlier guard)
         const front = this.uiRef.rootFrontFace!;
         front.active = false;
-        const displayNode = this.uiRef.displayCardNode!;
-        displayNode.active = false;
 
         // Animate back shrinking, then reveal front and expand
         const back = this.uiRef.rootBackFace!;
@@ -236,8 +238,6 @@ export class GridCardItem extends Component {
         this.runScaleTween(back, half, new Vec3(0, 1, z), linearEasing, () => {
             back.active = false;
             front.active = true;
-            const dispNode2 = this.uiRef.displayCardNode!;
-            dispNode2.active = true;
 
             // reveal front face by expanding
             const z2 = front.scale ? front.scale.z : z;
@@ -250,15 +250,14 @@ export class GridCardItem extends Component {
      * Play flip animation that transitions from front-face to back-face (mirror of back->front).
      */
     public playFlipFrontToBackAnimation(onComplete?: () => void) {
-        if (!this.node) return;
-
-        if (this._activeTween) {
-            this._activeTween.stop();
-            this._activeTween = null;
-        }
+        // if (this.activeTween) {
+        //     this.activeTween.stop();
+        //     this.activeTween = null;
+        // }
 
         // Require all flip-related nodes to be present
-        if (!this.uiRef.rootBackFace || !this.uiRef.rootFrontFace || !this.uiRef.displayCardNode) {
+        // if (!this.uiRef.rootBackFace || !this.uiRef.rootFrontFace || !this.uiRef.displayCardNode) {
+        if (!this.uiRef.rootBackFace || !this.uiRef.rootFrontFace) {
             console.warn("GridCardItem: Missing flip nodes (rootBackFace, rootFrontFace, displayCardNode); cannot perform playFlipFrontToBackAnimation.");
             if (onComplete) onComplete();
             return;
@@ -268,20 +267,23 @@ export class GridCardItem extends Component {
         const linearEasing = EasingMap.get(EasingType.Linear);
 
         // shrink front face, then enable back face and expand (non-null asserted after earlier guard)
-        const front = this.uiRef.rootFrontFace!;
-        const back = this.uiRef.rootBackFace!;
-        const z = front.scale ? front.scale.z : 1;
-        front.setScale(1, 1, z);
+        const front = this.uiRef.rootFrontFace;
+        const back = this.uiRef.rootBackFace;
+        front.setScale(1, 1, 1);
 
-        this.runScaleTween(front, half, new Vec3(0, 1, z), linearEasing, () => {
+        // // shrint the sprite display node as well
+        // const displayNode = this.uiRef.displayCardNode;
+        // displayNode.setScale(1, 1, 1);
+        // this.runScaleTween(displayNode, half, new Vec3(0, 1, 1), linearEasing);
+
+        this.runScaleTween(front, half, new Vec3(0, 1, 1), linearEasing, () => {
             front.active = false;
-            const dispNode = this.uiRef.displayCardNode!;
-            dispNode.active = false;
+            // const dispNode = this.uiRef.displayCardNode!;
+            // dispNode.active = false;
 
             back.active = true;
-            const z2 = back.scale ? back.scale.z : z;
-            back.setScale(0, 1, z2);
-            this.runScaleTween(back, half, new Vec3(1, 1, z2), linearEasing, onComplete);
+            back.setScale(0, 1, 1);
+            this.runScaleTween(back, half, new Vec3(1, 1, 1), linearEasing, onComplete);
         });
     }
 
@@ -297,11 +299,11 @@ export class GridCardItem extends Component {
             return;
         }
 
-        // Cancel any previous tween so a new one may take over
-        if (this._activeTween) {
-            this._activeTween.stop();
-            this._activeTween = null;
-        }
+        // // Cancel any previous tween so a new one may take over
+        // if (this.activeTween) {
+        //     this.activeTween.stop();
+        //     this.activeTween = null;
+        // }
 
         // Build tween and optionally include a delay before the scale animation
         let t = tween(target);
@@ -310,11 +312,11 @@ export class GridCardItem extends Component {
         }
 
         t = t.to(duration, { scale: toScale }, { easing: easingFunc }).call(() => {
-            this._activeTween = null;
+            this.activeTween = null;
             if (onComplete) onComplete();
         });
 
-        this._activeTween = t;
+        this.activeTween = t;
         t.start();
     }
 
