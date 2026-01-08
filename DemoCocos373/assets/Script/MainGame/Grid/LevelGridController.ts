@@ -6,6 +6,25 @@ import { LevelDataStorage } from "../LevelData/LevelDataStorage";
 const { ccclass, property } = _decorator;
 
 /**
+ * Grouped inspector data for the LevelGridController.
+ *
+ * Purpose:
+ * - Keeps prefab references (card item, level storage, icon storage) together so the
+ *   inspector shows a single collapsible object and the controller uses a single entry.
+ */
+@ccclass("LevelGridControllerData")
+class Data {
+    @property({ type: Prefab })
+    public cardItemPrefab: Prefab | null = null;
+
+    @property({ type: Prefab })
+    public levelStoragePrefab: Prefab | null = null;
+
+    @property({ type: Prefab })
+    public iconStoragePrefab: Prefab | null = null;
+}
+
+/**
  * Controller for the level grid used in the GamePage.
  * Responsibilities:
  * - layout and instantiate grid cells for a level data
@@ -14,15 +33,11 @@ const { ccclass, property } = _decorator;
 @ccclass("LevelGridController")
 export class LevelGridController extends Component {
     // ---------------- Inspector fields ----------------
-    @property({ type: Prefab })
-    public cardItemPrefab: Prefab | null = null;
-
-    // Level storage component/asset - typed as `any` to avoid hard dependency on storage implementation.
-    @property({ type: Prefab })
-    public levelStoragePrefab: Prefab | null = null;
-
-    @property({ type: Prefab })
-    public iconStoragePrefab: Prefab | null = null;
+    /**
+     * Grouped prefab references used by the grid (card prefab, level data prefab, icon storage prefab).
+     */
+    @property({ type: Data })
+    public data: Data = new Data();
 
     @property({ type: Layout })
     public gridLayout: Layout | null = null;
@@ -58,12 +73,12 @@ export class LevelGridController extends Component {
      * Load a level by index: clear current grid and instantiate card items based on LevelStorage LevelData.
      */
     public loadLevel(levelIndex: number) {
-        if (!this.levelStoragePrefab) {
-            console.error("LoadLevel(), LevelStorage is null");
+        if (!this.data || !this.data.levelStoragePrefab) {
+            console.error("LoadLevel(), LevelStorage prefab is null");
             return;
         }
 
-        const levelStorage = this.levelStoragePrefab.data.getComponent(LevelDataStorage);
+        const levelStorage = this.data.levelStoragePrefab.data.getComponent(LevelDataStorage);
         if (!levelStorage) {
             console.error("LoadLevel(), LevelStorage prefab missing LevelDataStorage component.");
             return;
@@ -85,7 +100,7 @@ export class LevelGridController extends Component {
             child.destroy();
         }
 
-        if (!this.cardItemPrefab) {
+        if (!this.data.cardItemPrefab) {
             console.error("LoadLevel(), CardItemPrefab is not set.");
             return;
         }
@@ -94,7 +109,7 @@ export class LevelGridController extends Component {
         this._allCards.length = 0;
         for (let row = 0; row < this._currentLevelSize.y; row++) {
             for (let col = 0; col < this._currentLevelSize.x; col++) {
-                const card = instantiate(this.cardItemPrefab);
+                const card = instantiate(this.data.cardItemPrefab);
                 rootItem.addChild(card);
                 // card.setScale(1, 1, 1);
 
@@ -250,7 +265,12 @@ export class LevelGridController extends Component {
             return;
         }
 
-        const storage = this.iconStoragePrefab.data.getComponent(IconSpriteStorage);
+        if (!this.data || !this.data.iconStoragePrefab) {
+            console.error("AssignSpriteToAllCard(), IconStorage prefab is not set.");
+            return;
+        }
+
+        const storage = this.data.iconStoragePrefab.data.getComponent(IconSpriteStorage);
         if (!storage) {
             console.error("AssignSpriteToAllCard(), IconSpriteStorage component missing from prefab.");
             return;
