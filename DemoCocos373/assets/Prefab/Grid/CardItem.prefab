@@ -39,11 +39,11 @@
         "__id__": 30
       },
       {
-        "__id__": 32
+        "__id__": 33
       }
     ],
     "_prefab": {
-      "__id__": 37
+      "__id__": 38
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -660,32 +660,41 @@
     "__prefab": {
       "__id__": 31
     },
-    "rootBackFace": {
-      "__id__": 2
-    },
-    "rootFrontFace": {
-      "__id__": 10
-    },
-    "displayCardItem": {
-      "__id__": 23
-    },
-    "mainButton": {
+    "uiRef": {
       "__id__": 32
     },
     "popUpAnimation": {
-      "__id__": 34
-    },
-    "popDownAnimation": {
       "__id__": 35
     },
-    "flipAnimation": {
+    "popDownAnimation": {
       "__id__": 36
+    },
+    "flipAnimation": {
+      "__id__": 37
     },
     "_id": ""
   },
   {
     "__type__": "cc.CompPrefabInfo",
     "fileId": "1fZNAg2rxAU56RMmUKG7+6"
+  },
+  {
+    "__type__": "GridCardItemUIReference",
+    "rootBackFace": {
+      "__id__": 2
+    },
+    "rootFrontFace": {
+      "__id__": 10
+    },
+    "displayCardNode": {
+      "__id__": 18
+    },
+    "displayCardSprite": {
+      "__id__": 23
+    },
+    "mainButton": {
+      "__id__": 33
+    }
   },
   {
     "__type__": "cc.Button",
@@ -696,7 +705,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 33
+      "__id__": 34
     },
     "clickEvents": [],
     "_interactable": true,

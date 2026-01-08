@@ -28,26 +28,36 @@ export class FlipAnimationConfig {
 }
 
 /**
+ * Inspector group for UI references used by GridCardItem.
+ */
+@ccclass("GridCardItemUIReference")
+class UIReference {
+    @property({ type: Node })
+    public rootBackFace: Node | null = null;
+
+    @property({ type: Node })
+    public rootFrontFace: Node | null = null;
+
+    @property({ type: Node })
+    public displayCardNode: Node | null = null;
+
+    @property({ type: Sprite })
+    public displayCardSprite: Sprite | null = null;
+
+    @property({ type: Button })
+    public mainButton: Button | null = null;
+}
+
+/**
  * Simple view controller for a grid cell card. Manages display sprite and click handling.
  */
 @ccclass("GridCardItem")
 export class GridCardItem extends Component {
     //------------------------------
     // Inspector fields (assign in editor)
-    // @property({ type: Node })
-    // rootDisplay: Node | null = null;
 
-    @property({ type: Node })
-    rootBackFace: Node | null = null;
-
-    @property({ type: Node })
-    rootFrontFace: Node | null = null;
-
-    @property({ type: Sprite })
-    displayCardItem: Sprite | null = null;
-
-    @property({ type: Button })
-    mainButton: Button | null = null;
+    @property({ type: UIReference })
+    public uiRef: UIReference = new UIReference();
 
     //------------------------------
     // --- animation config
@@ -105,8 +115,8 @@ export class GridCardItem extends Component {
      */
     public setDisplaySprite(sprite: SpriteFrame | null) {
         this.displaySpriteData = sprite;
-        if (this.displayCardItem) {
-            this.displayCardItem.spriteFrame = sprite;
+        if (this.uiRef.displayCardSprite) {
+            this.uiRef.displayCardSprite.spriteFrame = sprite;
         }
     }
 
@@ -115,8 +125,8 @@ export class GridCardItem extends Component {
      * @param isActive - Whether back face should be active.
      */
     public activeBackFace(isActive: boolean) {
-        if (this.rootBackFace) this.rootBackFace.active = isActive;
-        if (this.rootFrontFace) this.rootFrontFace.active = !isActive;
+        if (this.uiRef.rootBackFace) this.uiRef.rootBackFace.active = isActive;
+        if (this.uiRef.rootFrontFace) this.uiRef.rootFrontFace.active = !isActive;
     }
 
     /**
@@ -124,8 +134,8 @@ export class GridCardItem extends Component {
      * @param isActive - Whether front face should be active.
      */
     public activeFrontFace(isActive: boolean) {
-        if (this.rootFrontFace) this.rootFrontFace.active = isActive;
-        if (this.rootBackFace) this.rootBackFace.active = !isActive;
+        if (this.uiRef.rootFrontFace) this.uiRef.rootFrontFace.active = isActive;
+        if (this.uiRef.rootBackFace) this.uiRef.rootBackFace.active = !isActive;
     }
 
     /**
@@ -133,8 +143,8 @@ export class GridCardItem extends Component {
      * @param isActive - Whether interaction should be enabled.
      */
     public setActiveInteraction(isActive: boolean) {
-        if (this.mainButton) {
-            this.mainButton.interactable = isActive;
+        if (this.uiRef.mainButton) {
+            this.uiRef.mainButton.interactable = isActive;
         }
     }
 
@@ -202,8 +212,8 @@ export class GridCardItem extends Component {
         }
 
         // Require all flip-related nodes to be present
-        if (!this.rootBackFace || !this.rootFrontFace || !this.displayCardItem) {
-            console.warn("GridCardItem: Missing flip nodes (rootBackFace, rootFrontFace, displayCardItem); cannot perform playFlipBackToFrontAnimation.");
+        if (!this.uiRef.rootBackFace || !this.uiRef.rootFrontFace || !this.uiRef.displayCardNode) {
+            console.warn("GridCardItem: Missing flip nodes (rootBackFace, rootFrontFace, displayCardNode); cannot perform playFlipBackToFrontAnimation.");
             if (onComplete) onComplete();
             return;
         }
@@ -211,23 +221,28 @@ export class GridCardItem extends Component {
         const half = this.flipAnimation.duration / 2;
         const linearEasing = EasingMap.get(EasingType.Linear);
 
-        // hide front and display items immediately
-        this.rootFrontFace.active = false;
-        this.displayCardItem.node.active = false;
+        // hide front and display items immediately (non-null asserted after earlier guard)
+        const front = this.uiRef.rootFrontFace!;
+        front.active = false;
+        const displayNode = this.uiRef.displayCardNode!;
+        displayNode.active = false;
 
         // Animate back shrinking, then reveal front and expand
-        this.rootBackFace.active = true;
-        const z = this.rootBackFace.scale ? this.rootBackFace.scale.z : 1;
-        this.rootBackFace.setScale(1, 1, z);
+        const back = this.uiRef.rootBackFace!;
+        back.active = true;
+        const z = back.scale ? back.scale.z : 1;
+        back.setScale(1, 1, z);
 
-        this.runScaleTween(this.rootBackFace, half, new Vec3(0, 1, z), linearEasing, () => {
-            this.rootBackFace.active = false;
-            this.rootFrontFace.active = true;
-            this.displayCardItem.node.active = true;
+        this.runScaleTween(back, half, new Vec3(0, 1, z), linearEasing, () => {
+            back.active = false;
+            front.active = true;
+            const dispNode2 = this.uiRef.displayCardNode!;
+            dispNode2.active = true;
 
-            const z2 = this.rootFrontFace.scale ? this.rootFrontFace.scale.z : z;
-            this.rootFrontFace.setScale(0, 1, z2);
-            this.runScaleTween(this.rootFrontFace, half, new Vec3(1, 1, z2), linearEasing, onComplete);
+            // reveal front face by expanding
+            const z2 = front.scale ? front.scale.z : z;
+            front.setScale(0, 1, z2);
+            this.runScaleTween(front, half, new Vec3(1, 1, z2), linearEasing, onComplete);
         });
     }
 
@@ -243,8 +258,8 @@ export class GridCardItem extends Component {
         }
 
         // Require all flip-related nodes to be present
-        if (!this.rootBackFace || !this.rootFrontFace || !this.displayCardItem) {
-            console.warn("GridCardItem: Missing flip nodes (rootBackFace, rootFrontFace, displayCardItem); cannot perform playFlipFrontToBackAnimation.");
+        if (!this.uiRef.rootBackFace || !this.uiRef.rootFrontFace || !this.uiRef.displayCardNode) {
+            console.warn("GridCardItem: Missing flip nodes (rootBackFace, rootFrontFace, displayCardNode); cannot perform playFlipFrontToBackAnimation.");
             if (onComplete) onComplete();
             return;
         }
@@ -252,18 +267,21 @@ export class GridCardItem extends Component {
         const half = this.flipAnimation.duration / 2;
         const linearEasing = EasingMap.get(EasingType.Linear);
 
-        // shrink front face, then enable back face and expand
-        const z = this.rootFrontFace.scale ? this.rootFrontFace.scale.z : 1;
-        this.rootFrontFace.setScale(1, 1, z);
+        // shrink front face, then enable back face and expand (non-null asserted after earlier guard)
+        const front = this.uiRef.rootFrontFace!;
+        const back = this.uiRef.rootBackFace!;
+        const z = front.scale ? front.scale.z : 1;
+        front.setScale(1, 1, z);
 
-        this.runScaleTween(this.rootFrontFace, half, new Vec3(0, 1, z), linearEasing, () => {
-            this.rootFrontFace.active = false;
-            this.displayCardItem.node.active = false;
+        this.runScaleTween(front, half, new Vec3(0, 1, z), linearEasing, () => {
+            front.active = false;
+            const dispNode = this.uiRef.displayCardNode!;
+            dispNode.active = false;
 
-            this.rootBackFace.active = true;
-            const z2 = this.rootBackFace.scale ? this.rootBackFace.scale.z : z;
-            this.rootBackFace.setScale(0, 1, z2);
-            this.runScaleTween(this.rootBackFace, half, new Vec3(1, 1, z2), linearEasing, onComplete);
+            back.active = true;
+            const z2 = back.scale ? back.scale.z : z;
+            back.setScale(0, 1, z2);
+            this.runScaleTween(back, half, new Vec3(1, 1, z2), linearEasing, onComplete);
         });
     }
 
@@ -320,16 +338,16 @@ export class GridCardItem extends Component {
     }
 
     private registerButtonClick(): void {
-        if (this.mainButton) {
-            this.mainButton.node.on(Button.EventType.CLICK, this.onMainButtonClick, this);
+        if (this.uiRef.mainButton) {
+            this.uiRef.mainButton.node.on(Button.EventType.CLICK, this.onMainButtonClick, this);
             return;
         }
         console.warn(`GridCardItem: 'mainButton' not assigned for node '${this.node.name}'.`);
     }
 
     private unregisterButtonClick(): void {
-        if (this.mainButton) {
-            this.mainButton.node.off(Button.EventType.CLICK, this.onMainButtonClick, this);
+        if (this.uiRef.mainButton) {
+            this.uiRef.mainButton.node.off(Button.EventType.CLICK, this.onMainButtonClick, this);
         }
     }
 }
