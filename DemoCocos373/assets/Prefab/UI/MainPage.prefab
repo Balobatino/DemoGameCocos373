@@ -46,7 +46,7 @@
       }
     ],
     "_prefab": {
-      "__id__": 80
+      "__id__": 81
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -1648,17 +1648,23 @@
     "__prefab": {
       "__id__": 79
     },
-    "playGameButton": {
-      "__id__": 39
-    },
-    "settingsButton": {
-      "__id__": 67
+    "uiRef": {
+      "__id__": 80
     },
     "_id": ""
   },
   {
     "__type__": "cc.CompPrefabInfo",
     "fileId": "134/JXYnZDb6Uzn+PlxJje"
+  },
+  {
+    "__type__": "GameMainPageUIReference",
+    "playGameButton": {
+      "__id__": 39
+    },
+    "settingsButton": {
+      "__id__": 67
+    }
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -1669,6 +1675,7 @@
       "__id__": 0
     },
     "fileId": "dfmwxX7/pPpIJVmshjkQHj",
+    "instance": null,
     "targetOverrides": null
   }
 ]

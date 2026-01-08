@@ -6,17 +6,25 @@ import { GameLevelSelectPage } from "./GameLevelSelectPage";
 const { ccclass, property } = _decorator;
 
 /**
- * GameMainPage: Singleton that manages the main UI page for the game.
+ * Inspector group for UI references used by GameMainPage.
+ */
+@ccclass("GameMainPageUIReference")
+class UIReference {
+    @property({ type: Button })
+    public playGameButton: Button | null = null;
+
+    @property({ type: Button })
+    public settingsButton: Button | null = null;
+}
+
+/** * GameMainPage: Singleton that manages the main UI page for the game.
  */
 @ccclass("GameMainPage")
 export class GameMainPage extends Singleton<GameMainPage> {
     //------------------------------
-    //---- expose properties
-    @property({ type: Button })
-    playGameButton: Button | null = null;
-
-    @property({ type: Button })
-    settingsButton: Button | null = null;
+    //---- Inspector grouped UI references
+    @property({ type: UIReference })
+    public uiRef: UIReference = new UIReference();
 
     //------------------------------
     //--- Private Properties
@@ -69,17 +77,19 @@ export class GameMainPage extends Singleton<GameMainPage> {
 
     private registerButtonHandlers(): void {
         // Play button
-        if (this.playGameButton) {
-            this.playGameButton.node.on(Button.EventType.CLICK, this.onPlayGameButtonClicked, this);
+        const playBtn = this.uiRef.playGameButton;
+        if (playBtn) {
+            playBtn.node.on(Button.EventType.CLICK, this.onPlayGameButtonClicked, this);
         } else {
-            console.warn("GameMainPage: playGameButton is not assigned in the inspector.");
+            console.warn("GameMainPage: playGameButton is not assigned in the inspector (uiRef.playGameButton).");
         }
 
         // Settings button
-        if (this.settingsButton) {
-            this.settingsButton.node.on(Button.EventType.CLICK, this.onSettingsButtonClicked, this);
+        const settingsBtn = this.uiRef.settingsButton;
+        if (settingsBtn) {
+            settingsBtn.node.on(Button.EventType.CLICK, this.onSettingsButtonClicked, this);
         } else {
-            console.warn("GameMainPage: settingsButton is not assigned in the inspector.");
+            console.warn("GameMainPage: settingsButton is not assigned in the inspector (uiRef.settingsButton).");
         }
     }
 
@@ -147,11 +157,13 @@ export class GameMainPage extends Singleton<GameMainPage> {
      * Clean up registered button listeners to avoid duplicate handlers on reload.
      */
     protected onDestroy(): void {
-        if (this.playGameButton) {
-            this.playGameButton.node.off(Button.EventType.CLICK, this.onPlayGameButtonClicked, this);
+        const playBtn = this.uiRef.playGameButton;
+        if (playBtn) {
+            playBtn.node.off(Button.EventType.CLICK, this.onPlayGameButtonClicked, this);
         }
-        if (this.settingsButton) {
-            this.settingsButton.node.off(Button.EventType.CLICK, this.onSettingsButtonClicked, this);
+        const settingsBtn = this.uiRef.settingsButton;
+        if (settingsBtn) {
+            settingsBtn.node.off(Button.EventType.CLICK, this.onSettingsButtonClicked, this);
         }
     }
 }
