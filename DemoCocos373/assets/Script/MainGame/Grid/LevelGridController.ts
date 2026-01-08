@@ -4,6 +4,7 @@ import { TypedEvent } from "../../Utils/TypedEvent";
 import { EasingType, EasingMap } from "../../Standard/UIPage/ElementAnimation/AnimationMapCache";
 import { IconPackData, IconSpriteStorage } from "../LevelData/IconSpriteStorage";
 import { LevelDataStorage } from "../LevelData/LevelDataStorage";
+import { UIPage } from "../../Standard/UIPage/UIPage";
 const { ccclass, property } = _decorator;
 
 /**
@@ -23,6 +24,9 @@ class Data {
 
     @property({ type: Prefab })
     public iconStoragePrefab: Prefab | null = null;
+
+    @property({ type: UIPage })
+    public mainPage: UIPage | null = null;
 }
 
 /**
@@ -112,6 +116,11 @@ export class LevelGridController extends Component {
             return;
         }
 
+        // carefully lock interaction on mainPage while loading level and playing animations
+        if (this.data.mainPage) {
+            this.data.mainPage.setActiveInteraction(true);
+        }
+
         // save current level size for AdjustGridLayoutToFitCardInRenderArea usage
         this._currentLevelSize = level.size.clone ? level.size.clone() : new Vec2(level.size.x, level.size.y);
 
@@ -190,7 +199,7 @@ export class LevelGridController extends Component {
         }
 
         // log parent size
-        console.log(`AdjustGridLayoutToFitCardInRenderArea(), render area size: ${this._initGridRenderAreaSize.width} x ${this._initGridRenderAreaSize.height}`);
+        // console.log(`AdjustGridLayoutToFitCardInRenderArea(), render area size: ${this._initGridRenderAreaSize.width} x ${this._initGridRenderAreaSize.height}`);
 
         // compute cell and spacing similar to the C# logic
         const cellW = this._initGridRenderAreaSize.width / size.x;
@@ -198,12 +207,12 @@ export class LevelGridController extends Component {
         const edge = Math.min(cellW, cellH);
         const usableEdge = edge * 0.9; // 90% used by the cell
         const cellSize = new Size(usableEdge, usableEdge);
-        console.log(`AdjustGridLayoutToFitCardInRenderArea(), calculated cell size: ${cellSize.width} x ${cellSize.height}`);
+        // console.log(`AdjustGridLayoutToFitCardInRenderArea(), calculated cell size: ${cellSize.width} x ${cellSize.height}`);
 
         // reduce 10% for spacing, use 9% to fix issue where rounding causes overflow
         const spacingX = edge * 0.09;
         const spacingY = edge * 0.09;
-        console.log(`AdjustGridLayoutToFitCardInRenderArea(), calculated spacing: ${spacingX} x ${spacingY}`);
+        // console.log(`AdjustGridLayoutToFitCardInRenderArea(), calculated spacing: ${spacingX} x ${spacingY}`);
 
         const layout = this.uiRef.gridLayout as Layout;
         layout.cellSize = cellSize;
@@ -223,6 +232,10 @@ export class LevelGridController extends Component {
     public async playFirstOpenGameSequence() {
         await this.playBeginPopOutAnimationForAllCard();
         await this.playCountDownTextAnimationAndFlipDownCards();
+        // release interaction lock on mainPage after all animations complete
+        if (this.data.mainPage) {
+            this.data.mainPage.setActiveInteraction(true);
+        }
     }
 
     /**

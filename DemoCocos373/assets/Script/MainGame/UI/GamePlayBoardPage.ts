@@ -78,6 +78,8 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
 
         // schedule a one-shot callback after the show animation duration
         (this as any).scheduleOnce(() => {
+            // make sure no UI is blocked interaction to wait for level load, animation
+            uiPage.setActiveInteraction(false);
             // reset data before loading new level
             this.resetDataBeforeNewMatch();
             grid.loadLevel(levelIndex);
