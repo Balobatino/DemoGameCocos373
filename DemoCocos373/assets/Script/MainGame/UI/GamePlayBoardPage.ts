@@ -125,7 +125,7 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
         // call grid controller to cleanup current level
         const grid = this.uiRef.levelGridController;
         if (grid) {
-            grid.destroyAllCards();
+            grid.scaleDownAndDestroyRemainCards();
         }
         // Hide this page
         const uiPage = this.getUiPage();

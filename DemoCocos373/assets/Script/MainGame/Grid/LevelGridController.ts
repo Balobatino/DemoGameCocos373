@@ -428,49 +428,35 @@ export class LevelGridController extends Component {
     // ---------------- Release and Clear
     /**
      * Play scale-down animation on all remaining cards then destroy their nodes.
-     * Supports optional cancellation via AbortSignal.
+     *
+     * Behavior:
+     * - Uses the popDownAnimation.duration from the first card as the wait time.
+     * - Triggers pop-down animation on all cards and disables interaction.
+     * - After the duration elapses, calls destroyAllCards().
      */
-    public async scaleDownAndDestroyRemainCards(signal?: AbortSignal) {
-        // if (!this._allCards || this._allCards.length === 0) {
-        //     console.warn("ScaleDownAndDestroyRemainCards(), no cards available to scale/destroy");
-        //     return;
-        // }
-        // const scaleDownConfig = this.animationConfig?.scaleUpDown;
-        // for (let n = 0; n < this._allCards.length; n++) {
-        //     const card = this._allCards[n];
-        //     if (!card) continue;
-        //     // If the card's button is disabled it likely was matched and shouldn't be scaled again
-        //     try {
-        //         // @ts-ignore - mainButton may be undefined in some prefabs
-        //         if (card["mainButton"] && card["mainButton"].interactable === false) continue;
-        //     } catch (e) {
-        //         // ignore
-        //     }
-        //     if (scaleDownConfig && typeof scaleDownConfig.playScaleDown === "function") {
-        //         try {
-        //             scaleDownConfig.playScaleDown(card);
-        //         } catch (e) {
-        //             // ignore
-        //         }
-        //     }
-        // }
-        // if (scaleDownConfig && typeof scaleDownConfig.duration === "number") {
-        //     const waitMs = scaleDownConfig.duration * 1000;
-        //     // await this.waitWithOptionalAbort(waitMs, signal);
-        // }
-        // // Destroy all remaining card nodes and clear list
-        // for (let n = this._allCards.length - 1; n >= 0; n--) {
-        //     const card = this._allCards[n];
-        //     if (!card) {
-        //         this._allCards.splice(n, 1);
-        //         continue;
-        //     }
-        //     const go = card.node;
-        //     this._allCards.splice(n, 1);
-        //     go.removeFromParent();
-        //     go.destroy();
-        // }
-        // this._allCards.length = 0;
+    public scaleDownAndDestroyRemainCards(): void {
+        // Guard: if there are no cards, ensure cleanup and return early.
+        if (!this._allCards || this._allCards.length === 0) {
+            this.destroyAllCards();
+            return;
+        }
+
+        // Use the first card's configured pop-down duration as the delay before destruction.
+        const firstCard = this._allCards[0];
+        const durationSeconds = firstCard.popDownAnimation.duration;
+
+        // Trigger pop-down animation on all cards and disable interactions while animating.
+        for (let i = 0; i < this._allCards.length; i++) {
+            const card = this._allCards[i];
+            if (!card) continue;
+            card.setActiveInteraction(false);
+            card.playPopDownAnimation();
+        }
+
+        // Schedule destruction after the animation duration (convert seconds -> milliseconds).
+        this.scheduleOnce(() => {
+            this.destroyAllCards();
+        }, durationSeconds);
     }
 
     /**

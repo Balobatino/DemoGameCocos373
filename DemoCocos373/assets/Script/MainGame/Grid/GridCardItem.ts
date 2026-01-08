@@ -207,7 +207,7 @@ export class GridCardItem extends Component {
             return;
         }
 
-        const half = this.flipAnimation.duration / 2;
+        const halfDuration = this.flipAnimation.duration / 2;
         const linearEasing = EasingMap.get(EasingType.Linear);
 
         // hide front and display items immediately (non-null asserted after earlier guard)
@@ -217,17 +217,13 @@ export class GridCardItem extends Component {
         // Animate back shrinking, then reveal front and expand
         const back = this.uiRef.rootBackFace!;
         back.active = true;
-        const z = back.scale ? back.scale.z : 1;
-        back.setScale(1, 1, z);
+        back.setScale(1, 1, 1);
+        front.setScale(0, 1, 1);
 
-        this.runScaleTween(back, half, new Vec3(0, 1, z), linearEasing, () => {
+        this.runScaleTween(back, halfDuration, new Vec3(0, 1, 1), linearEasing, () => {
             back.active = false;
             front.active = true;
-
-            // reveal front face by expanding
-            const z2 = front.scale ? front.scale.z : z;
-            front.setScale(0, 1, z2);
-            this.runScaleTween(front, half, new Vec3(1, 1, z2), linearEasing, onComplete);
+            this.runScaleTween(front, halfDuration, new Vec3(1, 1, 1), linearEasing, onComplete);
         });
     }
 
@@ -242,19 +238,19 @@ export class GridCardItem extends Component {
             return;
         }
 
-        const half = this.flipAnimation.duration / 2;
+        const halfDuration = this.flipAnimation.duration / 2;
         const linearEasing = EasingMap.get(EasingType.Linear);
 
         // shrink front face, then enable back face and expand (non-null asserted after earlier guard)
         const front = this.uiRef.rootFrontFace;
         const back = this.uiRef.rootBackFace;
+        back.setScale(0, 1, 1);
         front.setScale(1, 1, 1);
 
-        this.runScaleTween(front, half, new Vec3(0, 1, 1), linearEasing, () => {
+        this.runScaleTween(front, halfDuration, new Vec3(0, 1, 1), linearEasing, () => {
             front.active = false;
             back.active = true;
-            back.setScale(0, 1, 1);
-            this.runScaleTween(back, half, new Vec3(1, 1, 1), linearEasing, onComplete);
+            this.runScaleTween(back, halfDuration, new Vec3(1, 1, 1), linearEasing, onComplete);
         });
     }
 
