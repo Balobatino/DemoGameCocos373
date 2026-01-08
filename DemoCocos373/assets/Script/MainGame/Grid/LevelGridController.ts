@@ -1,6 +1,7 @@
-import { _decorator, Component, Node, Prefab, instantiate, UITransform, Layout, Vec2, Size, SpriteFrame, isValid } from "cc";
+import { _decorator, Component, Node, Prefab, instantiate, UITransform, Layout, Vec2, Size, SpriteFrame, isValid, Label, tween, Vec3 } from "cc";
 import { GridCardItem } from "./GridCardItem";
 import { TypedEvent } from "../../Utils/TypedEvent";
+import { EasingType, EasingMap } from "../../Standard/UIPage/ElementAnimation/AnimationMapCache";
 import { IconPackData, IconSpriteStorage } from "../LevelData/IconSpriteStorage";
 import { LevelDataStorage } from "../LevelData/LevelDataStorage";
 const { ccclass, property } = _decorator;
@@ -34,6 +35,9 @@ class Data {
 class UIReference {
     @property({ type: Layout })
     public gridLayout: Layout | null = null;
+
+    @property({ type: Label })
+    public countDownText: Label | null = null;
 }
 
 /**
@@ -73,9 +77,16 @@ export class LevelGridController extends Component {
     // ---------------- Lifecycle ----------------
     // onLoad() {}
 
+    protected onEnable(): void {
+        // Disable the countdown label by default when this controller is enabled.
+        if (this.uiRef && this.uiRef.countDownText && this.uiRef.countDownText.node) {
+            this.uiRef.countDownText.node.active = false;
+        }
+    }
     protected start(): void {
-        // Cache initial render area size
+        // Cache the initial size of the grid render area for layout calculations.
         const parentTransform = this.node.getComponent(UITransform);
+
         if (parentTransform) {
             this._initGridRenderAreaSize = parentTransform.contentSize.clone();
         } else {
@@ -84,6 +95,7 @@ export class LevelGridController extends Component {
     }
 
     // ---------------- Public API ----------------
+    //---------- Load level, first open up level
     /**
      * Load a level by index: clear current grid and instantiate card items based on LevelStorage LevelData.
      */
@@ -93,7 +105,7 @@ export class LevelGridController extends Component {
             return;
         }
 
-        const levelStorage = this.data.levelStoragePrefab.data.getComponent(LevelDataStorage);
+        const levelStorage = this.data.levelStoragePrefab.data.getComponent(LevelDataStorage) as LevelDataStorage | null;
         if (!levelStorage) {
             console.error("LoadLevel(), LevelStorage prefab missing LevelDataStorage component.");
             return;
@@ -150,7 +162,7 @@ export class LevelGridController extends Component {
         this.assignSpriteToAllCard();
 
         // run begin pop-out animation
-        void this.playBeginPopOutAnimationForAllCard();
+        void this.playFirstOpenGameSequence();
     }
 
     /**
@@ -213,6 +225,11 @@ export class LevelGridController extends Component {
         layout.updateLayout();
     }
 
+    public async playFirstOpenGameSequence() {
+        await this.playBeginPopOutAnimationForAllCard();
+        await this.playCountDownTextAnimationAndFlipDownCards();
+    }
+
     /**
      * Play pop-out (scale-up) animation for all instantiated cards using configured animation.
      */
@@ -244,29 +261,66 @@ export class LevelGridController extends Component {
     }
 
     /**
+     * Play the countdown text animation shown after the initial pop-out.
+     */
+    public async playCountDownTextAnimationAndFlipDownCards(): Promise<void> {
+        if (!this.uiRef || !this.uiRef.countDownText) {
+            console.error("PlayCountDownTextAnimation(), countDownText is not configured.");
+            return;
+        }
+
+        const label = this.uiRef.countDownText;
+        const node = label.node;
+        const z = node.scale ? node.scale.z : 1;
+
+        // helper to animate the label scale and await completion
+        const runScale = (from: Vec3, to: Vec3, duration: number, easingType: EasingType) => {
+            node.setScale(from);
+            return new Promise<void>((resolve) => {
+                tween(node)
+                    .to(duration, { scale: to }, { easing: EasingMap.get(easingType) })
+                    .call(() => resolve())
+                    .start();
+            });
+        };
+
+        // Ensure label is visible and start from hidden (scale 0)
+        node.active = true;
+
+        // 1) Intro message
+        label.string = "Start";
+        await runScale(new Vec3(0, 0, z), new Vec3(1, 1, z), 0.5, EasingType.ElasticOut);
+        await new Promise((res) => setTimeout(res, 500));
+
+        // 2) Countdown 3,2,1
+        for (let v = 3; v >= 1; v--) {
+            label.string = `${v}`;
+            await runScale(new Vec3(0, 0, z), new Vec3(1, 1, z), 0.2, EasingType.BackOut);
+            await new Promise((res) => setTimeout(res, 600));
+        }
+
+        // 3) Go, then hide
+        label.string = "Go";
+        await runScale(new Vec3(2, 2, z), new Vec3(1, 1, z), 0.2, EasingType.ElasticOut);
+        await new Promise((res) => setTimeout(res, 500));
+        await runScale(new Vec3(1, 1, z), new Vec3(0, 0, z), 0.2, EasingType.Linear);
+
+        // Trigger card flips and then hide the label shortly after
+        this.playFlipAllCardsFrontToBack();
+        await new Promise((res) => setTimeout(res, 200));
+        node.active = false;
+    }
+
+    /**
      * Play flip animation for all instantiated cards from front to back.
      */
-    public async playFlipAllCardsFrontToBack() {
-        // if (!this._allCards || this._allCards.length === 0) {
-        //     return;
-        // }
-        // const flipAnim = this.animationConfig?.flip;
-        // if (!flipAnim || typeof flipAnim.duration !== "number") {
-        //     // no flip configured
-        //     return;
-        // }
-        // for (let n = 0; n < this._allCards.length; n++) {
-        //     const cardItem = this._allCards[n];
-        //     if (!cardItem) continue;
-        //     if (typeof flipAnim.playFlipFrontToBack === "function") {
-        //         try {
-        //             flipAnim.playFlipFrontToBack(cardItem);
-        //         } catch (e) {
-        //             // ignore
-        //         }
-        //     }
-        // }
-        // await new Promise((resolve) => setTimeout(resolve, flipAnim.duration * 1000));
+    public playFlipAllCardsFrontToBack(): void {
+        if (!this._allCards || this._allCards.length === 0) return;
+        for (let i = 0; i < this._allCards.length; i++) {
+            const card = this._allCards[i];
+            if (!card) continue;
+            card.playFlipFrontToBackAnimation();
+        }
     }
 
     /**
@@ -335,7 +389,8 @@ export class LevelGridController extends Component {
         }
     }
 
-    // ---------------- Modify all cards ----------------
+    //---------------- Public Methods ----------------
+    // ---------------- Modify all cards
     public allCardFaceUp() {
         if (!this._allCards || this._allCards.length === 0) {
             console.warn("AllCardFaceUp(), no cards available");
@@ -372,7 +427,8 @@ export class LevelGridController extends Component {
         }
     }
 
-    // ---------------- Release and Clear ----------------
+    //----------------------------------------------
+    // ---------------- Release and Clear
     /**
      * Play scale-down animation on all remaining cards then destroy their nodes.
      * Supports optional cancellation via AbortSignal.
