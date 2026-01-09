@@ -209,9 +209,9 @@ export class LevelGridController extends Component {
         const cellSize = new Size(usableEdge, usableEdge);
         // console.log(`AdjustGridLayoutToFitCardInRenderArea(), calculated cell size: ${cellSize.width} x ${cellSize.height}`);
 
-        // reduce 10% for spacing, use 9% to fix issue where rounding causes overflow
-        const spacingX = edge * 0.09;
-        const spacingY = edge * 0.09;
+        // reduce 10% for spacing, use 8% to fix issue where rounding causes overflow
+        const spacingX = edge * 0.08;
+        const spacingY = edge * 0.08;
         // console.log(`AdjustGridLayoutToFitCardInRenderArea(), calculated spacing: ${spacingX} x ${spacingY}`);
 
         const layout = this.uiRef.gridLayout as Layout;
