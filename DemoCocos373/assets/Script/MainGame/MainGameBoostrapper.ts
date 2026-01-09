@@ -1,7 +1,8 @@
-import { _decorator, Component, Node, CCFloat, game } from "cc";
+import { _decorator, Component, Node, CCFloat, game, AudioClip } from "cc";
 import { Singleton } from "../Standard/Singleton";
 import { MainGameLoadingCover } from "./MainGameLoadingCover";
 import { GameMainPage } from "./UI/GameMainPage";
+import { AudioManager } from "../Standard/Audio/AudioManager";
 const { ccclass, property } = _decorator;
 
 /**
@@ -12,6 +13,11 @@ const { ccclass, property } = _decorator;
  */
 @ccclass("MainGameBoostrapper")
 export class MainGameBoostrapper extends Singleton<MainGameBoostrapper> {
+    //------------------------------
+    //--- Inspector Properties
+    @property(AudioClip)
+    public mainBGM: AudioClip | null = null;
+
     protected doOnStart(): void {
         // Start the full async flow without blocking the engine.
         // console.log(`MainGameBoostrapper: doOnStart called. time ${game.totalTime / 1000}`);
@@ -40,6 +46,16 @@ export class MainGameBoostrapper extends Singleton<MainGameBoostrapper> {
 
         // Initial short delay so the opaque cover is visible briefly.
         await this.sleep(100);
+
+        // Play main BGM if assigned.
+        if (this.mainBGM) {
+            const audioMgr = AudioManager.getInstance<AudioManager>();
+            if (audioMgr) {
+                audioMgr.playBgm(this.mainBGM);
+            }
+        } else {
+            console.warn("MainGameBoostrapper: mainBGM AudioClip not assigned in inspector.");
+        }
 
         // Fade out to reveal the content, then wait for fade to finish.
         if (loadingCover) {
