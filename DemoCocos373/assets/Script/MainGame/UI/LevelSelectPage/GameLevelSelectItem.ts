@@ -1,5 +1,6 @@
-import { _decorator, Component, Button, Label } from "cc";
+import { _decorator, Component, Button, Label, Node } from "cc";
 import { TypedEvent } from "../../../Utils/TypedEvent";
+import { UserScoreLoadSave } from "../../ScoreLoadSave/UserScoreLoadSave";
 const { ccclass, property } = _decorator;
 
 /**
@@ -22,6 +23,10 @@ export class GameLevelSelectItem extends Component {
     /** Optional Label used to display the human-visible level number (shows index+1). */
     @property({ type: Label })
     levelLabel: Label | null = null;
+
+    /** List of star nodes to display achievement (activate first N nodes). */
+    @property({ type: [Node] })
+    starOnList: Node[] = [];
 
     //------------------------------
     // Public events
@@ -55,6 +60,24 @@ export class GameLevelSelectItem extends Component {
         if (this.levelLabel) {
             // Display human-friendly 1-based level number
             this.levelLabel.string = String(index + 1);
+        }
+
+        // Load saved star count for this level and update star nodes (if any).
+        if (this.starOnList && this.starOnList.length > 0) {
+            // Note: We interpret the stored numeric value as a star count (0..N).
+            let savedStarCount = UserScoreLoadSave.getScore(index);
+            let roundedNumStars = Math.floor(Number(savedStarCount));
+
+            if (Number.isNaN(roundedNumStars) || roundedNumStars < 0) roundedNumStars = 0;
+            if (roundedNumStars > this.starOnList.length) {
+                console.warn(`GameLevelSelectItem: saved stars (${roundedNumStars}) exceed available star nodes (${this.starOnList.length}) for level ${index}. Clamping.`);
+                roundedNumStars = this.starOnList.length;
+            }
+
+            for (let i = 0; i < this.starOnList.length; i++) {
+                const node = this.starOnList[i];
+                if (node) node.active = i < roundedNumStars;
+            }
         }
     }
 
