@@ -4,6 +4,8 @@ import { UIPage } from "../../Standard/UIPage/UIPage";
 import { GameMainPage } from "./GameMainPage";
 import { LevelGridController } from "../Grid/LevelGridController";
 import { GameLevelSelectPage } from "./GameLevelSelectPage";
+import { GameWinPage } from "./GameWinPage";
+import { UserScoreLoadSave } from "../ScoreLoadSave/UserScoreLoadSave";
 import { GridCardItem } from "../Grid/GridCardItem";
 import { GameStats } from "../GameStats/GameStats";
 const { ccclass, property } = _decorator;
@@ -78,6 +80,10 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
 
         uiPage.show();
         const delay = uiPage.getShowDuration ? uiPage.getShowDuration() : 0;
+        // make sure no UI is blocked interaction to wait for level load, animation
+        uiPage.setActiveInteraction(false);
+        // reset data before loading new level
+        this.resetDataBeforeNewMatch();
 
         const grid = this.uiRef.levelGridController;
         if (!grid) {
@@ -87,10 +93,6 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
 
         // schedule a one-shot callback after the show animation duration
         (this as any).scheduleOnce(() => {
-            // make sure no UI is blocked interaction to wait for level load, animation
-            uiPage.setActiveInteraction(false);
-            // reset data before loading new level
-            this.resetDataBeforeNewMatch();
             grid.loadLevel(levelIndex);
         }, delay);
     }
@@ -259,7 +261,7 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
 
         // Check win condition (placeholder)
         if (this.isLevelClear()) {
-            await this.onLevelCleared();
+            await this.playLevelClearRoutine();
         }
     }
 
@@ -322,18 +324,42 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
     }
 
     private isLevelClear(): boolean {
-        // TODO: implement proper level clear logic using gameStats and level storage
-        const grid = this.uiRef.levelGridController;
-        if (!grid) {
-            console.warn("GamePlayBoardPage.isLevelClear(): grid controller not assigned; cannot determine level clear.");
-            return false;
+        // level is clear when all pairs are matched
+        const totalPairs = GameStats.getCurrentLevelPairCount();
+        if (GameStats.matchCount >= totalPairs) {
+            return true;
         }
         return false;
     }
 
-    private async onLevelCleared(): Promise<void> {
-        // TODO: show level cleared UI, SFX, VFX and save score
-        console.log("GamePlayBoardPage.onLevelCleared(): TODO - show win UI and handle level clear flow.");
-        // await new Promise((res) => setTimeout(res, 0));
+    private async playLevelClearRoutine(): Promise<void> {
+        console.log("GamePlayBoardPage.onLevelCleared(): level cleared - handling win flow.");
+
+        // 1) destroy all cards , no need animation
+        const grid = this.uiRef.levelGridController;
+        if (grid) {
+            grid.destroyAllCards();
+        } else {
+            console.warn("GamePlayBoardPage: levelGridController not assigned; cannot destroy cards.");
+        }
+
+        // 2) Persist the player's score for this level
+        UserScoreLoadSave.saveScore(GameStats.selectLevelIndex, GameStats.matchingScore);
+
+        // 3) Hide the gameplay page immediately
+        const uiPage = this.getUiPage();
+        if (uiPage) {
+            uiPage.hide();
+        }
+        // Wait a short time to allow the pop-down animation / destruction to complete
+        await new Promise((res) => setTimeout(res, 300));
+
+        // 4) Show the Game Win page and update its UI (score and stars)
+        const win = GameWinPage.getInstance<GameWinPage>();
+        if (!win) {
+            console.warn("GamePlayBoardPage: GameWinPage singleton instance not found in Main scene.");
+            return;
+        }
+        win.openAndStartWingameAnimation();
     }
 }
