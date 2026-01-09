@@ -271,9 +271,6 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
 
         // Update stats and UI (placeholders)
         this.updateStatsForFailedMatching();
-        // TODO: update UI for failed matching (turn count)
-
-        // TODO: reset combo bar / cooldown: this.uiRef.comboBar?.onUserMatchingFailed();
 
         // play flip back animations concurrently
         item1.playFlipFrontToBackAnimation();

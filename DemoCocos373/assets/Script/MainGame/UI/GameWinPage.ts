@@ -3,6 +3,7 @@ import { Singleton } from "../../Standard/Singleton";
 import { UIPage } from "../../Standard/UIPage/UIPage";
 import { GameLevelSelectPage } from "./GameLevelSelectPage";
 import { GameStats } from "../GameStats/GameStats";
+import { GamePlayBoardPage } from "./GamePlayBoardPage";
 const { ccclass, property } = _decorator;
 
 /**
@@ -10,6 +11,9 @@ const { ccclass, property } = _decorator;
  */
 @ccclass("GameWinPageUIReference")
 class UIReference {
+    @property({ type: Button })
+    public replayButton: Button | null = null;
+
     @property({ type: Button })
     public homeButton: Button | null = null;
 
@@ -96,6 +100,13 @@ export class GameWinPage extends Singleton<GameWinPage> {
         } else {
             console.warn("GameWinPage: nextButton is not assigned in the inspector (uiRef.nextButton).");
         }
+
+        const replayBtn = this.uiRef.replayButton;
+        if (replayBtn) {
+            replayBtn.node.on(Button.EventType.CLICK, this.onReplayButtonClicked, this);
+        } else {
+            console.warn("GameWinPage: replayButton is not assigned in the inspector (uiRef.replayButton).");
+        }
     }
 
     private onHomeButtonClicked(): void {
@@ -122,6 +133,26 @@ export class GameWinPage extends Singleton<GameWinPage> {
         }
     }
 
+    private onReplayButtonClicked(): void {
+        // Hide this page if available.
+        const uiPage = this.getUiPage();
+        if (uiPage) {
+            uiPage.hide();
+        } else {
+            console.warn("GameLevelSelectPage: UIPage component not found; cannot call hide().");
+        }
+
+        // Reopen the main page for the same current level
+        const playBoardPage = GamePlayBoardPage.getInstance<GamePlayBoardPage>();
+        if (!playBoardPage) {
+            console.warn("GamePlayBoardPage singleton instance not found in Main scene.");
+            return;
+        }
+        playBoardPage.showAndLoadLevelWhenFinishAnimation(GameStats.selectLevelIndex);
+        // reset stats for new game
+        GameStats.resetStatsForNewGame();
+    }
+
     private onNextButtonClicked(): void {
         // hide this page
         const page = this.getUiPage();
@@ -130,6 +161,17 @@ export class GameWinPage extends Singleton<GameWinPage> {
         } else {
             console.warn("GameWinPage: UIPage component not found; cannot call hide().");
         }
+
+        // Reopen the main page for next level index
+        GameStats.selectLevelIndex++;
+        const playBoardPage = GamePlayBoardPage.getInstance<GamePlayBoardPage>();
+        if (!playBoardPage) {
+            console.warn("GamePlayBoardPage singleton instance not found in Main scene.");
+            return;
+        }
+        playBoardPage.showAndLoadLevelWhenFinishAnimation(GameStats.selectLevelIndex);
+        // reset stats for new game
+        GameStats.resetStatsForNewGame();
     }
 
     //------------------------------
@@ -149,6 +191,10 @@ export class GameWinPage extends Singleton<GameWinPage> {
         }
 
         // Disable buttons (non-interactable) and prepare visual nodes for animation.
+        if (this.uiRef.replayButton) {
+            this.uiRef.replayButton.node.setScale(0, 0, 0);
+            this.uiRef.replayButton.node.active = true;
+        }
         if (this.uiRef.homeButton) {
             // ensure scale starts at 0 so the pop animation works later
             this.uiRef.homeButton.node.setScale(0, 0, 0);
@@ -218,6 +264,18 @@ export class GameWinPage extends Singleton<GameWinPage> {
 
         // wait 500ms before showing buttons
         await this.sleep(500);
+
+        // Pop-in replay button
+        if (this.uiRef.replayButton) {
+            const replayButton = this.uiRef.replayButton.node;
+            replayButton.active = true;
+            replayButton.setScale(0, 0, 0);
+            // Start replay button pop tween (fire-and-forget)
+            tween(replayButton)
+                .to(0.3, { scale: new Vec3(1, 1, 1) }, { easing: easing.backOut })
+                .start();
+            await this.sleep(300);
+        }
 
         // Pop-in home button
         if (this.uiRef.homeButton) {
@@ -291,6 +349,10 @@ export class GameWinPage extends Singleton<GameWinPage> {
         const nextBtn = this.uiRef.nextButton;
         if (nextBtn) {
             nextBtn.node.off(Button.EventType.CLICK, this.onNextButtonClicked, this);
+        }
+        const replayBtn = this.uiRef.replayButton;
+        if (replayBtn) {
+            replayBtn.node.off(Button.EventType.CLICK, this.onReplayButtonClicked, this);
         }
     }
 }
