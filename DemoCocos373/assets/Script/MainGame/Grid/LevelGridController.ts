@@ -119,7 +119,7 @@ export class LevelGridController extends Component {
 
         // carefully lock interaction on mainPage while loading level and playing animations
         if (this.data.mainPage) {
-            this.data.mainPage.setActiveInteraction(true);
+            this.data.mainPage.setActiveInteraction(false);
         }
 
         // save current level size for AdjustGridLayoutToFitCardInRenderArea usage
@@ -210,8 +210,8 @@ export class LevelGridController extends Component {
         // console.log(`AdjustGridLayoutToFitCardInRenderArea(), calculated cell size: ${cellSize.width} x ${cellSize.height}`);
 
         // reduce 10% for spacing, use 8% to fix issue where rounding causes overflow
-        const spacingX = edge * 0.08;
-        const spacingY = edge * 0.08;
+        const spacingX = edge * 0.07;
+        const spacingY = edge * 0.07;
         // console.log(`AdjustGridLayoutToFitCardInRenderArea(), calculated spacing: ${spacingX} x ${spacingY}`);
 
         const layout = this.uiRef.gridLayout as Layout;
