@@ -280,14 +280,14 @@ export class LevelGridController extends Component {
         }
 
         const label = this.uiRef.countDownText;
-        const node = label.node;
-        const z = node.scale ? node.scale.z : 1;
+        const countDownNode = label.node;
+        const z = countDownNode.scale ? countDownNode.scale.z : 1;
 
         // helper to animate the label scale and await completion
         const runScale = (from: Vec3, to: Vec3, duration: number, easingType: EasingType) => {
-            node.setScale(from);
+            countDownNode.setScale(from);
             return new Promise<void>((resolve) => {
-                tween(node)
+                tween(countDownNode)
                     .to(duration, { scale: to }, { easing: EasingMap.get(easingType) })
                     .call(() => resolve())
                     .start();
@@ -295,7 +295,7 @@ export class LevelGridController extends Component {
         };
 
         // Ensure label is visible and start from hidden (scale 0)
-        node.active = true;
+        countDownNode.active = true;
 
         // 1) Intro message
         label.string = "Start";
@@ -318,7 +318,9 @@ export class LevelGridController extends Component {
         // Trigger card flips and then hide the label shortly after
         this.playFlipAllCardsFrontToBack();
         await new Promise((res) => setTimeout(res, 200));
-        node.active = false;
+
+        // hide countdown label
+        countDownNode.active = false;
     }
 
     /**
