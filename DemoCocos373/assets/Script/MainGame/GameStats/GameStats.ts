@@ -1,4 +1,4 @@
-import { _decorator, Component, Node } from "cc";
+import { _decorator, Component, Node, Vec2 } from "cc";
 const { ccclass, property } = _decorator;
 
 /**
@@ -8,8 +8,13 @@ const { ccclass, property } = _decorator;
  */
 @ccclass("GameStats")
 export class GameStats {
+    //--------------------------
+    //--- Public Static Properties
     /** Index of the selected level (set when user chooses a level). */
     public static selectLevelIndex: number = 0;
+
+    /** Size of the current level (set when level is loaded). */
+    public static levelSize: Vec2 = new Vec2(0, 0);
 
     /** Total accumulated score for the current match/session. */
     public static matchingScore: number = 0;
@@ -23,6 +28,8 @@ export class GameStats {
     /** Default points awarded on a successful match. */
     public static readonly DEFAULT_MATCH_SUCCESS_SCORE: number = 100;
 
+    //--------------------------
+    //--- Public Static Methods
     /**
      * Reset all tracked stats to initial values at the start of a new game/level.
      */
@@ -48,5 +55,40 @@ export class GameStats {
      */
     public static recordMatchFail(): void {
         this.turnCount++;
+    }
+
+    /**
+     * Number of pairs in this level (assumes even number of tiles).
+     * Floors size components to integers and computes floor((cols * rows) / 2).
+     */
+    public static getCurrentLevelPairCount(): number {
+        const tiles = this.levelSize.x * this.levelSize.y;
+        return Math.floor(tiles / 2);
+    }
+
+    // --------------------------
+    // ------- Star rating calculation
+
+    /**
+     * Calculate star rating based on pair count and turns using a simple percentage rule:
+     * - 3 stars: turnCount < pairCount * 1.30
+     * - 2 stars: turnCount < pairCount * 1.80
+     * - 1 star : otherwise
+     */
+    public static calculateStarForScore(pairCount: number, turnCount: number): number {
+        // Normalize inputs to integers and clamp to 0 for safety.
+        const pairs = Math.max(0, Math.floor(pairCount));
+        const turns = Math.max(0, Math.floor(turnCount));
+
+        // Guard: invalid level
+        if (pairs <= 0) return 0;
+
+        // Compute thresholds (use strict '<' per spec)
+        const threeStarThreshold = pairs * 1.3;
+        const twoStarThreshold = pairs * 1.8;
+
+        if (turns < threeStarThreshold) return 3;
+        if (turns < twoStarThreshold) return 2;
+        return 1;
     }
 }
