@@ -1,9 +1,13 @@
 import { _decorator, Component, Node } from "cc";
 const { ccclass, property } = _decorator;
 
+/**
+ * GameStats: Static class to hold game statistics and state.
+ */
 @ccclass("GameStats")
 export class GameStats {
     public static selectLevelIndex: number = 0;
+
     public static matchingScore: number = 0;
 
     public static turnCount: number = 0;

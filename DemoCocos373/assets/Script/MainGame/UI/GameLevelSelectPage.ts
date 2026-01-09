@@ -4,6 +4,7 @@ import { UIPage } from "../../Standard/UIPage/UIPage";
 import { GameMainPage } from "./GameMainPage";
 import { GamePlayBoardPage } from "./GamePlayBoardPage";
 import { GameLevelSelectItem } from "./LevelSelectPage/GameLevelSelectItem";
+import { GameStats } from "../GameStats/GameStats";
 const { ccclass, property } = _decorator;
 
 /**
@@ -124,7 +125,7 @@ export class GameLevelSelectPage extends Singleton<GameLevelSelectPage> {
     }
 
     private onItemSelected(levelIndex: number, item: GameLevelSelectItem): void {
-        console.log(`Level selected: index=${levelIndex}, item node='${item.node.name}'`);
+        // console.log(`Level selected: index=${levelIndex}, item node='${item.node.name}'`);
 
         // Hide this page if available.
         const uiPage = this.getUiPage();
@@ -141,6 +142,10 @@ export class GameLevelSelectPage extends Singleton<GameLevelSelectPage> {
             return;
         }
         playBoardPage.showAndLoadLevelWhenFinishAnimation(levelIndex);
+
+        // save select level index to GameStats, reset stats for new game
+        GameStats.selectLevelIndex = levelIndex;
+        GameStats.resetStatsForNewGame();
     }
 
     //------------------------------
