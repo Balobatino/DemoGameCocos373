@@ -63,20 +63,26 @@ export class GameLevelSelectItem extends Component {
         }
 
         // Load saved star count for this level and update star nodes (if any).
-        if (this.starOnList && this.starOnList.length > 0) {
-            // Note: We interpret the stored numeric value as a star count (0..N).
-            let savedStarCount = UserScoreLoadSave.getScore(index);
-            let roundedNumStars = Math.floor(Number(savedStarCount));
+        let savedStarCount = UserScoreLoadSave.getScore(index);
+        let roundedNumStars = Math.floor(Number(savedStarCount));
+        this.updateStarDisplay(roundedNumStars);
+    }
 
-            if (Number.isNaN(roundedNumStars) || roundedNumStars < 0) roundedNumStars = 0;
-            if (roundedNumStars > this.starOnList.length) {
-                console.warn(`GameLevelSelectItem: saved stars (${roundedNumStars}) exceed available star nodes (${this.starOnList.length}) for level ${index}. Clamping.`);
-                roundedNumStars = this.starOnList.length;
+    /** Update the star display based on the given star count.
+     * Activates the first N star nodes in `starOnList`.
+     */
+    public updateStarDisplay(starCount: number): void {
+        // Load saved star count for this level and update star nodes (if any).
+        if (this.starOnList && this.starOnList.length > 0) {
+            if (Number.isNaN(starCount) || starCount < 0) starCount = 0;
+            if (starCount > this.starOnList.length) {
+                console.warn(`GameLevelSelectItem: saved stars (${starCount}) exceed available star nodes (${this.starOnList.length}). Clamping.`);
+                starCount = this.starOnList.length;
             }
 
             for (let i = 0; i < this.starOnList.length; i++) {
                 const node = this.starOnList[i];
-                if (node) node.active = i < roundedNumStars;
+                if (node) node.active = i < starCount;
             }
         }
     }

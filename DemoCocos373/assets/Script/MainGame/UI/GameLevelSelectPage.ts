@@ -25,6 +25,9 @@ export class GameLevelSelectPage extends Singleton<GameLevelSelectPage> {
     // Map storing unsubscribe functions for item event subscriptions.
     private itemUnsubscribes = new Map<GameLevelSelectItem, () => void>();
 
+    // Cached list of GameLevelSelectItem components for quick lookup.
+    private gameLevelSelectItems: GameLevelSelectItem[] = [];
+
     //------------------------------
     //--- Lifecycle Methods
     protected doOnLoad(): void {
@@ -46,7 +49,10 @@ export class GameLevelSelectPage extends Singleton<GameLevelSelectPage> {
     //--- Private
 
     private cacheComponents(): void {
-        // Try to get UIPage on this node first, then search children.
+        this.cacheUIPage();
+    }
+
+    private cacheUIPage(): void {
         const onNode = this.node.getComponent(UIPage);
         if (onNode) {
             this.uiPage = onNode;
@@ -103,7 +109,13 @@ export class GameLevelSelectPage extends Singleton<GameLevelSelectPage> {
      */
     private loadAndRegisterItemListeners(): void {
         const items = this.node.getComponentsInChildren(GameLevelSelectItem);
-        if (!items || items.length === 0) return;
+        if (!items || items.length === 0) {
+            this.gameLevelSelectItems = [];
+            return;
+        }
+
+        // Cache items for fast lookups later (e.g., updating stars).
+        this.gameLevelSelectItems = items;
 
         // Use an indexed loop so we can assign levelIndex based on list order (0-based).
         for (let i = 0; i < items.length; i++) {
@@ -148,6 +160,33 @@ export class GameLevelSelectPage extends Singleton<GameLevelSelectPage> {
         GameStats.resetStatsForNewGame();
     }
 
+    /**
+     * Update the star display for a given level index by finding the matching item
+     * and forwarding the call to its `updateStarDisplay` method.
+     * If items are not yet cached, tries to rescan children.
+     * @param levelIndex - zero-based index of the level
+     * @param starCount - number of stars to display
+     */
+    public updateStarDisplayForLevel(levelIndex: number, starCount: number): void {
+        if (!Number.isInteger(levelIndex) || levelIndex < 0) {
+            console.warn(`GameLevelSelectPage: invalid levelIndex ${levelIndex} passed to updateStarDisplayForLevel.`);
+            return;
+        }
+
+        if (!this.gameLevelSelectItems || this.gameLevelSelectItems.length === 0) {
+            console.warn(`GameLevelSelectPage: no cached GameLevelSelectItems available to update stars for level ${levelIndex}. Ensure loadAndRegisterItemListeners() has run.`);
+            return;
+        }
+
+        const item = this.gameLevelSelectItems.find((it) => it.levelIndex === levelIndex);
+        if (!item) {
+            console.warn(`GameLevelSelectPage: no GameLevelSelectItem found with levelIndex ${levelIndex}.`);
+            return;
+        }
+
+        item.updateStarDisplay(starCount);
+    }
+
     //------------------------------
     //--- Cleanup
     protected onDestroy(): void {
@@ -164,5 +203,7 @@ export class GameLevelSelectPage extends Singleton<GameLevelSelectPage> {
             }
         }
         this.itemUnsubscribes.clear();
+        // Clear cached items list
+        this.gameLevelSelectItems = [];
     }
 }

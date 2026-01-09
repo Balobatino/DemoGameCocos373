@@ -232,6 +232,8 @@ export class GameWinPage extends Singleton<GameWinPage> {
         const pairCount = GameStats.getCurrentLevelPairCount();
         const turns = GameStats.turnCount;
         const starsEarned = GameStats.calculateStarForScore(pairCount, turns);
+        // request level select page to update star display for this level
+        this.requestLevelSelectPageToUpdateStarDisplay(GameStats.selectLevelIndex, starsEarned);
 
         // ensure page interaction is blocked while animations play
         const page = this.getUiPage();
@@ -336,6 +338,18 @@ export class GameWinPage extends Singleton<GameWinPage> {
                 labelText.string = Math.floor(endValue).toString();
             })
             .start();
+    }
+
+    /**
+     * Request the GameLevelSelectPage to update star display for a given level index.
+     */
+    private requestLevelSelectPageToUpdateStarDisplay(levelIndex: number, starCount: number): void {
+        const levelSelectPage = GameLevelSelectPage.getInstance<GameLevelSelectPage>();
+        if (!levelSelectPage) {
+            console.warn("GameWinPage: GameLevelSelectPage singleton instance not found in Main scene.");
+            return;
+        }
+        levelSelectPage.updateStarDisplayForLevel(levelIndex, starCount);
     }
 
     //------------------------------
