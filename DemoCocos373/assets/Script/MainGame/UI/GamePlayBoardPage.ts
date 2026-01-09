@@ -1,4 +1,4 @@
-import { _decorator, Button } from "cc";
+import { _decorator, Button, Label } from "cc";
 import { Singleton } from "../../Standard/Singleton";
 import { UIPage } from "../../Standard/UIPage/UIPage";
 import { GameMainPage } from "./GameMainPage";
@@ -18,6 +18,12 @@ class UIReference {
 
     @property({ type: LevelGridController })
     public levelGridController: LevelGridController | null = null;
+
+    @property({ type: Label })
+    public turnCountText: Label | null = null;
+
+    @property({ type: Label })
+    public scoreText: Label | null = null;
 }
 
 /**
@@ -43,6 +49,8 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
     protected doOnLoad(): void {
         this.cacheComponents();
         this.registerButtonHandlers();
+        // Initialize UI stats labels with current game stats
+        this.updateUiStats();
     }
 
     //------------------------------
@@ -283,16 +291,34 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
     private resetDataBeforeNewMatch(): void {
         this._firstSelectedCard = null;
         this._secondSelectedCard = null;
+        // Refresh UI counters when a new match starts.
+        this.updateUiStats();
     }
 
     private updateScoreForSuccessMatching(): void {
         // Award points and increment match counter using GameStats helper.
         GameStats.recordMatchSuccess();
+        // Update UI labels (score / turns)
+        this.updateUiStats();
     }
 
     private updateStatsForFailedMatching(): void {
         // Increment turn count for failed attempt
         GameStats.recordMatchFail();
+        // Update UI labels
+        this.updateUiStats();
+    }
+
+    /**
+     * Update the on-screen labels for turn count and score using values from GameStats.
+     */
+    private updateUiStats(): void {
+        if (this.uiRef.turnCountText) {
+            this.uiRef.turnCountText.string = `${GameStats.turnCount}`;
+        }
+        if (this.uiRef.scoreText) {
+            this.uiRef.scoreText.string = `${GameStats.matchingScore}`;
+        }
     }
 
     private isLevelClear(): boolean {
