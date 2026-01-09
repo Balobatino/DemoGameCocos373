@@ -5,6 +5,7 @@ import { GameMainPage } from "./GameMainPage";
 import { LevelGridController } from "../Grid/LevelGridController";
 import { GameLevelSelectPage } from "./GameLevelSelectPage";
 import { GridCardItem } from "../Grid/GridCardItem";
+import { GameStats } from "../GameStats/GameStats";
 const { ccclass, property } = _decorator;
 
 /**
@@ -232,8 +233,6 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
         // TODO: play match success audio
         console.log("GamePlayBoardPage: Matching success");
 
-        // TODO: update combo bar
-
         // Update scoring and UI (placeholders, implement when game data exists)
         this.updateScoreForSuccessMatching();
         // TODO: update UI for success matching (update score, turns, matches)
@@ -287,11 +286,13 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
     }
 
     private updateScoreForSuccessMatching(): void {
-        // TODO: Implement scoring using game data
+        // Award points and increment match counter using GameStats helper.
+        GameStats.recordMatchSuccess();
     }
 
     private updateStatsForFailedMatching(): void {
-        // TODO: Increment turn count in game stats,
+        // Increment turn count for failed attempt
+        GameStats.recordMatchFail();
     }
 
     private isLevelClear(): boolean {
