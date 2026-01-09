@@ -1,5 +1,6 @@
-import { _decorator, Button, Label } from "cc";
+import { _decorator, Button, Label, AudioClip } from "cc";
 import { Singleton } from "../../Standard/Singleton";
+import { AudioManager } from "../../Standard/Audio/AudioManager";
 import { UIPage } from "../../Standard/UIPage/UIPage";
 import { GameMainPage } from "./GameMainPage";
 import { LevelGridController } from "../Grid/LevelGridController";
@@ -29,6 +30,21 @@ class UIReference {
 }
 
 /**
+ * Inspector container for audio clips used by gameplay.
+ */
+@ccclass("Audio")
+export class Audio {
+    @property({ type: AudioClip })
+    public cardFlip: AudioClip | null = null;
+
+    @property({ type: AudioClip })
+    public matchSuccess: AudioClip | null = null;
+
+    @property({ type: AudioClip })
+    public matchFailed: AudioClip | null = null;
+}
+
+/**
  * GamePlayBoardPage: Singleton that manages the gameplay board UI page.
  * Responsibilities:
  * - expose and provide access to the LevelGridController used by gameplay
@@ -40,6 +56,9 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
     //---- Inspector grouped UI references
     @property({ type: UIReference })
     public uiRef: UIReference = new UIReference();
+
+    @property({ type: Audio })
+    public audio: Audio = new Audio();
 
     //------------------------------
     //--- Private Properties
@@ -200,7 +219,9 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
             cardItem.setActiveInteraction(false);
             // flip card to reveal (GridCardItem handles animation)
             cardItem.playFlipBackToFrontAnimation();
-            // TODO: play flip audio
+            // play flip audio
+            const audioMgr = AudioManager.getInstance<AudioManager>();
+            if (this.audio?.cardFlip) audioMgr.playOnShot(this.audio.cardFlip);
             return;
         }
 
@@ -224,7 +245,8 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
         }
 
         // Play flip for second card and flip audio
-        // TODO: play flip audio
+        const audioMgr = AudioManager.getInstance<AudioManager>();
+        if (this.audio?.cardFlip) audioMgr.playOnShot(this.audio.cardFlip);
         this._secondSelectedCard.playFlipBackToFrontAnimation();
 
         // Wait for flip animation to finish (duration from GridCardItem.flipAnimation)
@@ -240,7 +262,9 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
     }
 
     private async onMatchingSuccess(item1: GridCardItem, item2: GridCardItem): Promise<void> {
-        // TODO: play match success audio
+        // play match success audio
+        const audioMgr = AudioManager.getInstance<AudioManager>();
+        if (this.audio?.matchSuccess) audioMgr.playOnShot(this.audio.matchSuccess);
         console.log("GamePlayBoardPage: Matching success");
 
         // Update scoring and UI (placeholders, implement when game data exists)
@@ -266,7 +290,9 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
     }
 
     private async onMatchingFail(item1: GridCardItem, item2: GridCardItem): Promise<void> {
-        // TODO: play match fail audio (e.g. audioData.matchFailAudioCommand.Execute())
+        // play match fail audio
+        const audioMgr = AudioManager.getInstance<AudioManager>();
+        if (this.audio?.matchFailed) audioMgr.playOnShot(this.audio.matchFailed);
         console.log("GamePlayBoardPage: Matching fail");
 
         // Update stats and UI (placeholders)
