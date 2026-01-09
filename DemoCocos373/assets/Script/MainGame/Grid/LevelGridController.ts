@@ -5,6 +5,7 @@ import { EasingType, EasingMap } from "../../Standard/UIPage/ElementAnimation/An
 import { IconPackData, IconSpriteStorage } from "../LevelData/IconSpriteStorage";
 import { LevelDataStorage } from "../LevelData/LevelDataStorage";
 import { UIPage } from "../../Standard/UIPage/UIPage";
+import { GameStats } from "../GameStats/GameStats";
 const { ccclass, property } = _decorator;
 
 /**
@@ -122,7 +123,10 @@ export class LevelGridController extends Component {
         }
 
         // save current level size for AdjustGridLayoutToFitCardInRenderArea usage
-        this._currentLevelSize = level.size.clone ? level.size.clone() : new Vec2(level.size.x, level.size.y);
+        this._currentLevelSize = level.size.clone();
+
+        // save to GameStats, so we don't need to retrieve level data later
+        GameStats.levelSize = this._currentLevelSize.clone();
 
         // Clear existing children
         const rootItem = this.node;
@@ -169,10 +173,6 @@ export class LevelGridController extends Component {
         void this.playFirstOpenGameSequence();
     }
 
-    /**
-     * Adjust the Layout spacing and child sizes to fit the configured render area.
-     * 90% of each cell is used as the cellSize, and 10% used as spacing.
-     */
     /**
      * Adjust the Layout spacing and child sizes to fit the configured render area.
      * Translated from the C# implementation but *does not* modify the render area's
