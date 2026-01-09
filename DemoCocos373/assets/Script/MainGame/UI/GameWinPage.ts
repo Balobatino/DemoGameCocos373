@@ -1,9 +1,10 @@
-import { _decorator, Button, Label, Node, tween, Vec3, easing } from "cc";
+import { _decorator, Button, Label, Node, tween, Vec3, easing, AudioClip } from "cc";
 import { Singleton } from "../../Standard/Singleton";
 import { UIPage } from "../../Standard/UIPage/UIPage";
 import { GameLevelSelectPage } from "./GameLevelSelectPage";
 import { GameStats } from "../GameStats/GameStats";
 import { GamePlayBoardPage } from "./GamePlayBoardPage";
+import { AudioManager } from "../../Standard/Audio/AudioManager";
 const { ccclass, property } = _decorator;
 
 /**
@@ -28,6 +29,15 @@ class UIReference {
 }
 
 /**
+ * Inspector container for audio clips used by gameplay.
+ */
+@ccclass("AudioData")
+export class AudioData {
+    @property({ type: AudioClip })
+    public winSfx: AudioClip | null = null;
+}
+
+/**
  * GameWinPage: Singleton that manages the win UI page for the game.
  */
 @ccclass("GameWinPage")
@@ -36,6 +46,9 @@ export class GameWinPage extends Singleton<GameWinPage> {
     //---- Inspector grouped UI references
     @property({ type: UIReference })
     public uiRef: UIReference = new UIReference();
+
+    @property({ type: AudioData })
+    public audioData: AudioData = new AudioData();
 
     //------------------------------
     //--- Private Properties
@@ -228,6 +241,13 @@ export class GameWinPage extends Singleton<GameWinPage> {
      * - pop-in home and next buttons then re-enable page interaction
      */
     public async wingameAnimation(): Promise<void> {
+        // play win SFX
+        const audioMgr = AudioManager.getInstance<AudioManager>();
+        if (audioMgr && this.audioData.winSfx) {
+            audioMgr.playOnShot(this.audioData.winSfx);
+        } else {
+            console.warn("GameWinPage: AudioManager singleton instance not found or missing winSfx; cannot play win SFX.");
+        }
         // compute stars using GameStats
         const pairCount = GameStats.getCurrentLevelPairCount();
         const turns = GameStats.turnCount;

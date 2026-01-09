@@ -40,7 +40,7 @@
       }
     ],
     "_prefab": {
-      "__id__": 185
+      "__id__": 186
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -3958,6 +3958,9 @@
     "uiRef": {
       "__id__": 184
     },
+    "audioData": {
+      "__id__": 185
+    },
     "_id": ""
   },
   {
@@ -3988,6 +3991,13 @@
     ],
     "scoreText": {
       "__id__": 159
+    }
+  },
+  {
+    "__type__": "AudioData",
+    "winSfx": {
+      "__uuid__": "9f895c60-cca3-44d7-8454-a9756d3462d6",
+      "__expectedType__": "cc.AudioClip"
     }
   },
   {
