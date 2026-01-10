@@ -2888,6 +2888,12 @@
     },
     "closeButton": {
       "__id__": 68
+    },
+    "muteBgmToggle": {
+      "__id__": 90
+    },
+    "muteSfxToggle": {
+      "__id__": 110
     }
   },
   {

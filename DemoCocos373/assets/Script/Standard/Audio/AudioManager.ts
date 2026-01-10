@@ -90,6 +90,20 @@ export class AudioManager extends Singleton<AudioManager> {
         this.updatePlayingVolumes();
     }
 
+    /** Explicitly set whether BGM should be muted. */
+    public setMuteBGM(muted: boolean): void {
+        if (this.isMuteBGM === muted) return;
+        this.isMuteBGM = muted;
+        this.updatePlayingVolumes();
+    }
+
+    /** Explicitly set whether SFX should be muted. */
+    public setMuteSFX(muted: boolean): void {
+        if (this.isMuteSFX === muted) return;
+        this.isMuteSFX = muted;
+        this.updatePlayingVolumes();
+    }
+
     /** Returns whether BGM is currently muted. */
     public isBgmMuted(): boolean {
         return this.isMuteBGM;

@@ -1,7 +1,8 @@
-import { _decorator, Button, Component, Node } from "cc";
+import { _decorator, Button, Component, Node, Toggle } from "cc";
 import { Singleton } from "../../Standard/Singleton";
 import { UIPage } from "../../Standard/UIPage/UIPage";
 import { GameMainPage } from "./GameMainPage";
+import { AudioManager } from "../../Standard/Audio/AudioManager"; // for reading/setting mute state
 const { ccclass, property } = _decorator;
 
 /**
@@ -17,6 +18,12 @@ export class UIReference {
 
     @property({ type: Button })
     public closeButton: Button | null = null;
+
+    @property({ type: Toggle })
+    public muteBgmToggle: Toggle | null = null;
+
+    @property({ type: Toggle })
+    public muteSfxToggle: Toggle | null = null;
 }
 
 /**
@@ -91,6 +98,22 @@ export class GameSettingPage extends Singleton<GameSettingPage> {
         } else {
             console.warn("GameSettingPage: closeButton is not assigned in the inspector (uiRef.closeButton).");
         }
+
+        // Mute BGM toggle
+        const muteBgm = this.uiRef.muteBgmToggle;
+        if (muteBgm) {
+            muteBgm.node.on(Toggle.EventType.TOGGLE, this.onMuteBgmToggled, this);
+        } else {
+            console.warn("GameSettingPage: muteBgmToggle is not assigned in the inspector (uiRef.muteBgmToggle).");
+        }
+
+        // Mute SFX toggle
+        const muteSfx = this.uiRef.muteSfxToggle;
+        if (muteSfx) {
+            muteSfx.node.on(Toggle.EventType.TOGGLE, this.onMuteSfxToggled, this);
+        } else {
+            console.warn("GameSettingPage: muteSfxToggle is not assigned in the inspector (uiRef.muteSfxToggle).");
+        }
     }
 
     /**
@@ -99,6 +122,43 @@ export class GameSettingPage extends Singleton<GameSettingPage> {
      */
     private onPolicyButtonClicked(): void {
         // console.log("Policy button clicked. Opening policy...");
+    }
+
+    // Initialize toggle states from AudioManager once the node is enabled and start runs
+    protected start(): void {
+        const audioMgr = AudioManager.getInstance<AudioManager>();
+        if (!audioMgr) return;
+
+        const muteBgm = this.uiRef.muteBgmToggle;
+        if (muteBgm) {
+            // Set without notifying to avoid firing handlers when initializing
+            muteBgm.setIsCheckedWithoutNotify(!audioMgr.isBgmMuted());
+        }
+
+        const muteSfx = this.uiRef.muteSfxToggle;
+        if (muteSfx) {
+            muteSfx.setIsCheckedWithoutNotify(!audioMgr.isSfxMuted());
+        }
+    }
+
+    // Handler for BGM mute toggle changed
+    private onMuteBgmToggled(toggle: Toggle): void {
+        const audioMgr = AudioManager.getInstance<AudioManager>();
+        if (!audioMgr) {
+            console.warn("GameSettingPage: AudioManager singleton instance not found; cannot set BGM mute.");
+            return;
+        }
+        audioMgr.setMuteBGM(!toggle.isChecked);
+    }
+
+    // Handler for SFX mute toggle changed
+    private onMuteSfxToggled(toggle: Toggle): void {
+        const audioMgr = AudioManager.getInstance<AudioManager>();
+        if (!audioMgr) {
+            console.warn("GameSettingPage: AudioManager singleton instance not found; cannot set SFX mute.");
+            return;
+        }
+        audioMgr.setMuteSFX(!toggle.isChecked);
     }
 
     /**
@@ -143,6 +203,15 @@ export class GameSettingPage extends Singleton<GameSettingPage> {
         const closeBtn = this.uiRef.closeButton;
         if (closeBtn) {
             closeBtn.node.off(Button.EventType.CLICK, this.onCloseButtonClicked, this);
+        }
+
+        const muteBgm = this.uiRef.muteBgmToggle;
+        if (muteBgm) {
+            muteBgm.node.off(Toggle.EventType.TOGGLE, this.onMuteBgmToggled, this);
+        }
+        const muteSfx = this.uiRef.muteSfxToggle;
+        if (muteSfx) {
+            muteSfx.node.off(Toggle.EventType.TOGGLE, this.onMuteSfxToggled, this);
         }
     }
 }
