@@ -7,15 +7,27 @@ const { ccclass, property } = _decorator;
 /**
  * GameSettingPage: Singleton that manages the settings UI page for the game.
  */
+/**
+ * Inspector group for Settings Page UI references.
+ */
+@ccclass("GameSettingPageUIReference")
+export class UIReference {
+    @property({ type: Button })
+    public policyButton: Button | null = null;
+
+    @property({ type: Button })
+    public closeButton: Button | null = null;
+}
+
+/**
+ * GameSettingPage: Singleton that manages the settings UI page for the game.
+ */
 @ccclass("GameSettingPage")
 export class GameSettingPage extends Singleton<GameSettingPage> {
     //------------------------------
-    //---- expose properties
-    @property({ type: Button })
-    policyButton: Button | null = null;
-
-    @property({ type: Button })
-    closeButton: Button | null = null;
+    //---- Inspector grouped UI references
+    @property({ type: UIReference })
+    public uiRef: UIReference = new UIReference();
 
     //------------------------------
     //--- Private Properties
@@ -65,17 +77,19 @@ export class GameSettingPage extends Singleton<GameSettingPage> {
 
     private registerButtonHandlers(): void {
         // Policy button
-        if (this.policyButton) {
-            this.policyButton.node.on(Button.EventType.CLICK, this.onPolicyButtonClicked, this);
+        const policyBtn = this.uiRef.policyButton;
+        if (policyBtn) {
+            policyBtn.node.on(Button.EventType.CLICK, this.onPolicyButtonClicked, this);
         } else {
-            console.warn("GameSettingPage: policyButton is not assigned in the inspector.");
+            console.warn("GameSettingPage: policyButton is not assigned in the inspector (uiRef.policyButton).");
         }
 
         // Close button
-        if (this.closeButton) {
-            this.closeButton.node.on(Button.EventType.CLICK, this.onCloseButtonClicked, this);
+        const closeBtn = this.uiRef.closeButton;
+        if (closeBtn) {
+            closeBtn.node.on(Button.EventType.CLICK, this.onCloseButtonClicked, this);
         } else {
-            console.warn("GameSettingPage: closeButton is not assigned in the inspector.");
+            console.warn("GameSettingPage: closeButton is not assigned in the inspector (uiRef.closeButton).");
         }
     }
 
@@ -122,11 +136,13 @@ export class GameSettingPage extends Singleton<GameSettingPage> {
      * Clean up registered button listeners to avoid duplicate handlers on reload.
      */
     protected onDestroy(): void {
-        if (this.policyButton) {
-            this.policyButton.node.off(Button.EventType.CLICK, this.onPolicyButtonClicked, this);
+        const policyBtn = this.uiRef.policyButton;
+        if (policyBtn) {
+            policyBtn.node.off(Button.EventType.CLICK, this.onPolicyButtonClicked, this);
         }
-        if (this.closeButton) {
-            this.closeButton.node.off(Button.EventType.CLICK, this.onCloseButtonClicked, this);
+        const closeBtn = this.uiRef.closeButton;
+        if (closeBtn) {
+            closeBtn.node.off(Button.EventType.CLICK, this.onCloseButtonClicked, this);
         }
     }
 }
