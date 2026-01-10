@@ -18,6 +18,10 @@ export class AudioManager extends Singleton<AudioManager> {
     // Currently playing players (both SFX and BGM)
     private playingPlayers: AudioPlayer[] = [];
 
+    // Mute flags for BGM and SFX
+    private isMuteBGM: boolean = false;
+    private isMuteSFX: boolean = false;
+
     //------------------------------
     //--- Lifecycle Methods
     protected doOnLoad(): void {
@@ -64,13 +68,48 @@ export class AudioManager extends Singleton<AudioManager> {
         this.idlePlayers.push(player);
     }
 
-    /** Currently fixed to 1.0; later make configurable. */
+    /** Currently fixed to 1.0; later make configurable. Returns 0 when BGM is muted. */
     public getVolumeBGM(): number {
-        return 1;
+        return this.isMuteBGM ? 0 : 1;
     }
-    /** Currently fixed to 1.0; later make configurable. */
+
+    /** Currently fixed to 1.0; later make configurable. Returns 0 when SFX is muted. */
     public getVolumeSFX(): number {
-        return 1;
+        return this.isMuteSFX ? 0 : 1;
+    }
+
+    /** Toggle BGM mute state. */
+    public toggleMuteBGM(): void {
+        this.isMuteBGM = !this.isMuteBGM;
+        this.updatePlayingVolumes();
+    }
+
+    /** Toggle SFX mute state. */
+    public toggleMuteSFX(): void {
+        this.isMuteSFX = !this.isMuteSFX;
+        this.updatePlayingVolumes();
+    }
+
+    /** Returns whether BGM is currently muted. */
+    public isBgmMuted(): boolean {
+        return this.isMuteBGM;
+    }
+
+    /** Returns whether SFX is currently muted. */
+    public isSfxMuted(): boolean {
+        return this.isMuteSFX;
+    }
+
+    /** Update volume on currently playing players to respect mute flags. */
+    private updatePlayingVolumes(): void {
+        for (const p of this.playingPlayers) {
+            if (!p.audioSource) continue;
+            if (p.audioType === AudioType.BGM) {
+                p.audioSource.volume = this.getVolumeBGM();
+            } else if (p.audioType === AudioType.SFX) {
+                p.audioSource.volume = this.getVolumeSFX();
+            }
+        }
     }
 
     //------------------------------
