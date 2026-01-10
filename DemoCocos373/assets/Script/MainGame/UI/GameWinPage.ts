@@ -248,16 +248,20 @@ export class GameWinPage extends Singleton<GameWinPage> {
         } else {
             console.warn("GameWinPage: AudioManager singleton instance not found or missing winSfx; cannot play win SFX.");
         }
+        // wait for the show duration of uipage
+        const page = this.getUiPage();
+        // ensure page interaction is blocked while animations play
+        if (page) {
+            page.setActiveInteraction(false);
+            const showDuration = page.getShowDuration();
+            await this.sleep(showDuration * 1000);
+        }
         // compute stars using GameStats
         const pairCount = GameStats.getCurrentLevelPairCount();
         const turns = GameStats.turnCount;
         const starsEarned = GameStats.calculateStarForScore(pairCount, turns);
         // request level select page to update star display for this level
         this.requestLevelSelectPageToUpdateStarDisplay(GameStats.selectLevelIndex, starsEarned);
-
-        // ensure page interaction is blocked while animations play
-        const page = this.getUiPage();
-        if (page) page.setActiveInteraction(false);
 
         // Pop each earned star in sequence
         for (let i = 0; i < starsEarned && i < this.uiRef.starOnList.length; i++) {
