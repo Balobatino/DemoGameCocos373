@@ -480,7 +480,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 720,
+      "width": 1280,
       "height": 1280
     },
     "_anchorPoint": {
@@ -501,8 +501,8 @@
     "__prefab": null,
     "_alignFlags": 45,
     "_target": null,
-    "_left": 0,
-    "_right": 0,
+    "_left": -280,
+    "_right": -280,
     "_top": 0,
     "_bottom": 0,
     "_horizontalCenter": 0,
