@@ -76,14 +76,14 @@ export class LevelGridController extends Component {
     private _allCards: GridCardItem[] = [];
 
     // ---------------- Lifecycle ----------------
-    // onLoad() {}
 
     protected onEnable(): void {
         // Disable the countdown label by default when this controller is enabled.
-        if (this.uiRef && this.uiRef.countDownText && this.uiRef.countDownText.node) {
+        if (this.uiRef.countDownText.node) {
             this.uiRef.countDownText.node.active = false;
         }
     }
+
     protected start(): void {
         // Cache the initial size of the grid render area for layout calculations.
         const parentTransform = this.node.getComponent(UITransform);
