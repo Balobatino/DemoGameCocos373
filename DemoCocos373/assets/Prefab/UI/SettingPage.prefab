@@ -346,7 +346,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": -2.091000000000008,
-      "y": 149.27999999999997,
+      "y": 138.155,
       "z": 0
     },
     "_lrot": {
@@ -395,7 +395,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 0,
+      "y": 8.9,
       "z": 0
     },
     "_lrot": {
@@ -519,7 +519,7 @@
     "_contentSize": {
       "__type__": "cc.Size",
       "width": 462.5790000000002,
-      "height": 85.48299999999975
+      "height": 97.34999999999974
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -545,10 +545,10 @@
     },
     "_alignFlags": 45,
     "_target": null,
-    "_left": -33.3805000000001,
-    "_right": -29.198500000000063,
-    "_top": -42.02149999999986,
-    "_bottom": 256.5385000000001,
+    "_left": -33.38050000000009,
+    "_right": -29.19850000000007,
+    "_top": -36.82999999999986,
+    "_bottom": 239.48000000000013,
     "_horizontalCenter": 0,
     "_verticalCenter": 0,
     "_isAbsLeft": true,
@@ -589,7 +589,7 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "9dc091c7-9864-4020-92dc-546311ceb65e@f9941",
+      "__uuid__": "7333c06f-2db3-4477-be6d-ef566e0443e3@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 0,
@@ -853,6 +853,8 @@
       "__id__": 0
     },
     "fileId": "c6CEVE9TxA0bjeIBLGpryv",
+    "instance": null,
+    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -1137,6 +1139,8 @@
       "__id__": 0
     },
     "fileId": "7dPUghF+VMzbgTqopiYS9/",
+    "instance": null,
+    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -2010,7 +2014,10 @@
       "b": 124,
       "a": 255
     },
-    "_normalSprite": null,
+    "_normalSprite": {
+      "__uuid__": "871fb495-2af6-4af7-aa6e-75cf1668fb65@f9941",
+      "__expectedType__": "cc.SpriteFrame"
+    },
     "_hoverSprite": null,
     "_pressedSprite": null,
     "_disabledSprite": null,
@@ -2345,7 +2352,10 @@
       "b": 124,
       "a": 255
     },
-    "_normalSprite": null,
+    "_normalSprite": {
+      "__uuid__": "a6d37104-74f2-44e6-8c30-3eede899bfae@f9941",
+      "__expectedType__": "cc.SpriteFrame"
+    },
     "_hoverSprite": null,
     "_pressedSprite": null,
     "_disabledSprite": null,
