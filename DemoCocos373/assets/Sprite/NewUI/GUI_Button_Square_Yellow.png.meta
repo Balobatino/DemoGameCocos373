@@ -2,7 +2,7 @@
   "ver": "1.0.25",
   "importer": "image",
   "imported": true,
-  "uuid": "ab40e967-c35d-461f-b6ee-439bbad5857b",
+  "uuid": "c91180e3-daf4-4e5d-b9c7-af167173ed42",
   "files": [
     ".json",
     ".png"
@@ -10,14 +10,14 @@
   "subMetas": {
     "6c48a": {
       "importer": "texture",
-      "uuid": "ab40e967-c35d-461f-b6ee-439bbad5857b@6c48a",
-      "displayName": "GUI_Button_Square_Blue_Press",
+      "uuid": "c91180e3-daf4-4e5d-b9c7-af167173ed42@6c48a",
+      "displayName": "GUI_Button_Square_Yellow",
       "id": "6c48a",
       "name": "texture",
       "userData": {
         "wrapModeS": "clamp-to-edge",
         "wrapModeT": "clamp-to-edge",
-        "imageUuidOrDatabaseUri": "ab40e967-c35d-461f-b6ee-439bbad5857b",
+        "imageUuidOrDatabaseUri": "c91180e3-daf4-4e5d-b9c7-af167173ed42",
         "isUuid": true,
         "visible": false,
         "minfilter": "linear",
@@ -34,8 +34,8 @@
     },
     "f9941": {
       "importer": "sprite-frame",
-      "uuid": "ab40e967-c35d-461f-b6ee-439bbad5857b@f9941",
-      "displayName": "GUI_Button_Square_Blue_Press",
+      "uuid": "c91180e3-daf4-4e5d-b9c7-af167173ed42@f9941",
+      "displayName": "GUI_Button_Square_Yellow",
       "id": "f9941",
       "name": "spriteFrame",
       "userData": {
@@ -53,7 +53,7 @@
         "borderTop": 22,
         "borderBottom": 26,
         "borderLeft": 25,
-        "borderRight": 23,
+        "borderRight": 22,
         "packable": true,
         "pixelsToUnit": 100,
         "pivotX": 0.5,
@@ -114,7 +114,7 @@
           ]
         },
         "isUuid": true,
-        "imageUuidOrDatabaseUri": "ab40e967-c35d-461f-b6ee-439bbad5857b@6c48a",
+        "imageUuidOrDatabaseUri": "c91180e3-daf4-4e5d-b9c7-af167173ed42@6c48a",
         "atlasUuid": ""
       },
       "ver": "1.0.11",
@@ -129,6 +129,6 @@
     "type": "sprite-frame",
     "fixAlphaTransparencyArtifacts": true,
     "hasAlpha": true,
-    "redirect": "ab40e967-c35d-461f-b6ee-439bbad5857b@f9941"
+    "redirect": "c91180e3-daf4-4e5d-b9c7-af167173ed42@f9941"
   }
 }
