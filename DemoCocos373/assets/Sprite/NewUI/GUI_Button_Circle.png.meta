@@ -11,7 +11,7 @@
     "6c48a": {
       "importer": "texture",
       "uuid": "ec81ad71-adaa-44fe-af14-e68f0b31802f@6c48a",
-      "displayName": "GUI_7",
+      "displayName": "GUI_Button_Circle",
       "id": "6c48a",
       "name": "texture",
       "userData": {
@@ -35,7 +35,7 @@
     "f9941": {
       "importer": "sprite-frame",
       "uuid": "ec81ad71-adaa-44fe-af14-e68f0b31802f@f9941",
-      "displayName": "GUI_7",
+      "displayName": "GUI_Button_Circle",
       "id": "f9941",
       "name": "spriteFrame",
       "userData": {
