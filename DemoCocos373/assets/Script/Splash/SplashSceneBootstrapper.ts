@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, director, CCFloat, game } from "cc";
 import { Singleton } from "../Standard/Singleton";
 import { SplashLoadingCover } from "./SplashLoadingCover";
+import { SplashLoadingBar } from "./SplashLoadingBar";
 const { ccclass, property } = _decorator;
 
 /**
@@ -55,9 +56,18 @@ export class SplashSceneBootstrapper extends Singleton<SplashSceneBootstrapper> 
             await this.sleep(loadingCover.fadeAnimationDuration * 1000);
         }
 
+        // After fade-out, run the loading bar fake progress if present.
+        const loadingBar = SplashLoadingBar.getInstance<SplashLoadingBar>();
+        if (loadingBar) {
+            console.log(`SplashLoadingBar: fakeLoadingProgress starting. time ${game.totalTime / 1000}`);
+            await loadingBar.fakeLoadingProgress();
+        } else {
+            console.warn("SplashLoadingBar singleton instance not found in Splash scene.");
+        }
+
         // Keep the splash visible for the configured duration.
         // console.log(`SplashSceneBootstrapper: waiting splash duration ${this.splashDuration}s. time ${game.totalTime / 1000}`);
-        await this.sleep(this.splashDuration * 1000);
+        await this.sleep(this.splashDuration * 300);
 
         // Fade back to opaque before switching scenes.
         if (loadingCover) {
