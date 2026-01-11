@@ -377,7 +377,7 @@
     },
     "_lscale": {
       "__type__": "cc.Vec3",
-      "x": 1.7777777777777777,
+      "x": 1.2972972972972974,
       "y": 1,
       "z": 1
     },
@@ -461,7 +461,7 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "d9841c45-ab52-4dbc-b643-40b0e32ec492@f9941",
+      "__uuid__": "25a5ef09-a171-4a4f-9e08-01df7bfa49aa@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 0,
@@ -942,7 +942,7 @@
     ],
     "value": {
       "__type__": "cc.Size",
-      "width": 720,
+      "width": 716.3000000000001,
       "height": 1280
     }
   },
