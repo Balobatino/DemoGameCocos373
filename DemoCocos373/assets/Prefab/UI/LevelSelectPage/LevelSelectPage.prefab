@@ -165,7 +165,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 0,
+      "y": -28.13499999999999,
       "z": 0
     },
     "_lrot": {
@@ -205,7 +205,7 @@
     "_contentSize": {
       "__type__": "cc.Size",
       "width": 530,
-      "height": 800
+      "height": 743.73
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -233,8 +233,8 @@
     "_target": null,
     "_left": 0,
     "_right": 0,
-    "_top": 0,
-    "_bottom": 0,
+    "_top": 56.26999999999998,
+    "_bottom": -9.769962616701378e-15,
     "_horizontalCenter": 0,
     "_verticalCenter": 0,
     "_isAbsLeft": true,
@@ -306,8 +306,6 @@
       "__id__": 0
     },
     "fileId": "7aeXI7WdJF440N74uIceM5",
-    "instance": null,
-    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -512,7 +510,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 630.1800000000001,
+      "width": 566.5860000000002,
       "height": 139.32000000000033
     },
     "_anchorPoint": {
@@ -539,8 +537,8 @@
     },
     "_alignFlags": 45,
     "_target": null,
-    "_left": -50.090000000000046,
-    "_right": -50.090000000000046,
+    "_left": -18.2930000000001,
+    "_right": -18.29300000000005,
     "_top": -23.929000000000144,
     "_bottom": 684.6089999999998,
     "_horizontalCenter": 0,
@@ -614,8 +612,6 @@
       "__id__": 0
     },
     "fileId": "f0Alw6mTBGaK6S/7MawyVX",
-    "instance": null,
-    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -3306,8 +3302,6 @@
       "__id__": 0
     },
     "fileId": "b90Kf478FN16Nm0rbJh5r9",
-    "instance": null,
-    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -3381,8 +3375,6 @@
       "__id__": 0
     },
     "fileId": "200JLrM9VBLZzzdjWGYJqF",
-    "instance": null,
-    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -3521,8 +3513,6 @@
       "__id__": 0
     },
     "fileId": "9fxmhuXuBHpYjYrwK+sBKi",
-    "instance": null,
-    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
