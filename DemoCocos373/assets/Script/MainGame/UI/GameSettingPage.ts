@@ -122,6 +122,9 @@ export class GameSettingPage extends Singleton<GameSettingPage> {
      */
     private onPolicyButtonClicked(): void {
         // console.log("Policy button clicked. Opening policy...");
+        // open web link : https://doc-hosting.flycricket.io/funny-memory-card-matching-game-privacy-policy/645b03e8-8258-4d27-88ad-054ace69d2da/privacy
+        const policyUrl = "https://doc-hosting.flycricket.io/funny-memory-card-matching-game-privacy-policy/645b03e8-8258-4d27-88ad-054ace69d2da/privacy";
+        window.open(policyUrl, "_blank");
     }
 
     // Initialize toggle states from AudioManager once the node is enabled and start runs
