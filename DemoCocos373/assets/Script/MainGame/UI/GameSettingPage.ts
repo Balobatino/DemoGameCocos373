@@ -132,12 +132,12 @@ export class GameSettingPage extends Singleton<GameSettingPage> {
         const muteBgm = this.uiRef.muteBgmToggle;
         if (muteBgm) {
             // Set without notifying to avoid firing handlers when initializing
-            muteBgm.setIsCheckedWithoutNotify(!audioMgr.isBgmMuted());
+            muteBgm.setIsCheckedWithoutNotify(audioMgr.isBgmMuted());
         }
 
         const muteSfx = this.uiRef.muteSfxToggle;
         if (muteSfx) {
-            muteSfx.setIsCheckedWithoutNotify(!audioMgr.isSfxMuted());
+            muteSfx.setIsCheckedWithoutNotify(audioMgr.isSfxMuted());
         }
     }
 
@@ -148,7 +148,7 @@ export class GameSettingPage extends Singleton<GameSettingPage> {
             console.warn("GameSettingPage: AudioManager singleton instance not found; cannot set BGM mute.");
             return;
         }
-        audioMgr.setMuteBGM(!toggle.isChecked);
+        audioMgr.setMuteBGM(toggle.isChecked);
     }
 
     // Handler for SFX mute toggle changed
@@ -158,7 +158,7 @@ export class GameSettingPage extends Singleton<GameSettingPage> {
             console.warn("GameSettingPage: AudioManager singleton instance not found; cannot set SFX mute.");
             return;
         }
-        audioMgr.setMuteSFX(!toggle.isChecked);
+        audioMgr.setMuteSFX(toggle.isChecked);
     }
 
     /**
