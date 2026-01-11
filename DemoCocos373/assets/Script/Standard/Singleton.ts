@@ -45,7 +45,7 @@ export abstract class Singleton<T extends Component> extends Component {
     protected onLoad(): void {
         // If a different instance exists already, destroy this duplicate node.
         if ((this.constructor as any).instance && (this.constructor as any).instance !== this) {
-            console.warn(`Duplicate singleton ${this.constructor.name} destroyed.`);
+            console.warn(`Duplicate singleton [${this.constructor.name}] destroyed.`);
             this.node.destroy();
             return;
         }

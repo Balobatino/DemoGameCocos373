@@ -9,6 +9,7 @@ import { GameWinPage } from "./GameWinPage";
 import { UserScoreLoadSave } from "../ScoreLoadSave/UserScoreLoadSave";
 import { GridCardItem } from "../Grid/GridCardItem";
 import { GameStats } from "../GameStats/GameStats";
+import { GameBackgroundChanger } from "../BackgroundChanger/GameBackgroundChanger";
 const { ccclass, property } = _decorator;
 
 /**
@@ -104,12 +105,20 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
         // reset data before loading new level
         this.resetDataBeforeNewMatch();
 
+        // change the background for each level load
+        const bgChanger = GameBackgroundChanger.getInstance<GameBackgroundChanger>();
+        if (bgChanger) {
+            bgChanger.TransitionToNextBackground();
+        } else {
+            console.warn("GamePlayBoardPage: GameBackgroundChanger singleton instance not found in Main scene.");
+        }
+
+        // grid toload level
         const grid = this.uiRef.levelGridController;
         if (!grid) {
             console.warn("GamePlayBoardPage: levelGridController not assigned; cannot load level.");
             return;
         }
-
         // schedule a one-shot callback after the show animation duration
         (this as any).scheduleOnce(() => {
             grid.loadLevel(levelIndex);
