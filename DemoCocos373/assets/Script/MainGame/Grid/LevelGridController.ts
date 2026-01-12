@@ -199,7 +199,7 @@ export class LevelGridController extends Component {
         }
 
         // log parent size
-        // console.log(`AdjustGridLayoutToFitCardInRenderArea(), render area size: ${this._initGridRenderAreaSize.width} x ${this._initGridRenderAreaSize.height}`);
+        // console.log(`AdjustGridLayoutToFitCardInRenderArea(), render area size: ${this._initGridRenderAreaSize.width} x ${this._initGridRenderAreaSize.height}, level size: ${size.x} x ${size.y}`);
 
         // compute cell and spacing similar to the C# logic
         const cellW = this._initGridRenderAreaSize.width / size.x;
@@ -210,8 +210,8 @@ export class LevelGridController extends Component {
         // console.log(`AdjustGridLayoutToFitCardInRenderArea(), calculated cell size: ${cellSize.width} x ${cellSize.height}`);
 
         // reduce 10% for spacing, use 8% to fix issue where rounding causes overflow
-        const spacingX = edge * 0.07;
-        const spacingY = edge * 0.07;
+        const spacingX = edge * 0.08;
+        const spacingY = edge * 0.08;
         // console.log(`AdjustGridLayoutToFitCardInRenderArea(), calculated spacing: ${spacingX} x ${spacingY}`);
 
         const layout = this.uiRef.gridLayout as Layout;
@@ -220,8 +220,8 @@ export class LevelGridController extends Component {
         layout.spacingY = spacingY;
 
         // calculate the required size of the parent to fit the grid exactly
-        const totalWidth = size.x * cellSize.width + (size.x - 1) * spacingX;
-        const totalHeight = size.y * cellSize.height + (size.y - 1) * spacingY;
+        const totalWidth = size.x * edge;
+        const totalHeight = size.y * edge;
         // set to parent
         parentTransform.setContentSize(totalWidth, totalHeight);
 
