@@ -173,8 +173,8 @@ export class GameLevelSelectPage extends Singleton<GameLevelSelectPage> {
                 const levelData = levelStorage.getLevel(i);
                 if (levelData && levelData.size) {
                     const pairCount = Math.floor((levelData.size.x * levelData.size.y) / 2);
-                    const savedScore = UserScoreLoadSave.getScore(i);
-                    starCount = GameStats.estimateStarFromScore(pairCount, savedScore);
+                    const saved = UserScoreLoadSave.getScoreData(i);
+                    starCount = GameStats.calculateStarFromSavedScoreAndTurns(pairCount, saved.score, saved.turnCount);
                 } else {
                     console.warn(`GameLevelSelectPage: Level data missing for index ${i}; defaulting starCount to 0.`);
                 }

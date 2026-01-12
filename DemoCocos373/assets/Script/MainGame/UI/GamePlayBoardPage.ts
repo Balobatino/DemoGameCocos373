@@ -375,8 +375,8 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
             console.warn("GamePlayBoardPage: levelGridController not assigned; cannot destroy cards.");
         }
 
-        // 2) Persist the player's score for this level
-        UserScoreLoadSave.saveScore(GameStats.selectLevelIndex, GameStats.matchingScore);
+        // 2) Persist the player's score and turn count for this level
+        UserScoreLoadSave.saveScore(GameStats.selectLevelIndex, GameStats.matchingScore, GameStats.turnCount);
 
         // 3) Hide the gameplay page immediately
         const uiPage = this.getUiPage();
