@@ -1,11 +1,30 @@
-import { _decorator, Button } from "cc";
+import { _decorator, Button, Prefab } from "cc";
 import { Singleton } from "../../Standard/Singleton";
 import { UIPage } from "../../Standard/UIPage/UIPage";
 import { GameMainPage } from "./GameMainPage";
 import { GamePlayBoardPage } from "./GamePlayBoardPage";
 import { GameLevelSelectItem } from "./LevelSelectPage/GameLevelSelectItem";
 import { GameStats } from "../GameStats/GameStats";
+import { UserScoreLoadSave } from "../ScoreLoadSave/UserScoreLoadSave";
+import { LevelDataStorage } from "../LevelData/LevelDataStorage";
 const { ccclass, property } = _decorator;
+
+/**
+ * Grouped data for GameLevelSelectPage similar to LevelGridController:
+ * - Data stores the LevelDataStorage prefab reference (set via inspector)
+ * - UIReference holds UI refs (kept minimal for now)
+ */
+@ccclass("GameLevelSelectPageData")
+export class Data {
+    @property({ type: Prefab })
+    public levelStoragePrefab: Prefab | null = null;
+}
+
+@ccclass("GameLevelSelectPageUIReference")
+export class UIReference {
+    @property({ type: Button })
+    public closeButton: Button | null = null;
+}
 
 /**
  * GameLevelSelectPage: Singleton that manages the level selection UI page.
@@ -14,8 +33,11 @@ const { ccclass, property } = _decorator;
 export class GameLevelSelectPage extends Singleton<GameLevelSelectPage> {
     //------------------------------
     //---- expose properties
-    @property({ type: Button })
-    closeButton: Button | null = null;
+    @property({ type: Data })
+    public data: Data = new Data();
+
+    @property({ type: UIReference })
+    public uiRef: UIReference = new UIReference();
 
     //------------------------------
     //--- Private Properties
@@ -68,11 +90,12 @@ export class GameLevelSelectPage extends Singleton<GameLevelSelectPage> {
     }
 
     private registerButtonHandlers(): void {
-        // Close button
-        if (this.closeButton) {
-            this.closeButton.node.on(Button.EventType.CLICK, this.onCloseButtonClicked, this);
+        // Close button (in UI reference)
+        const closeBtn = this.uiRef && this.uiRef.closeButton;
+        if (closeBtn) {
+            closeBtn.node.on(Button.EventType.CLICK, this.onCloseButtonClicked, this);
         } else {
-            console.warn("GameLevelSelectPage: closeButton is not assigned in the inspector.");
+            console.warn("GameLevelSelectPage: uiRef.closeButton is not assigned in the inspector.");
         }
     }
 
@@ -114,6 +137,25 @@ export class GameLevelSelectPage extends Singleton<GameLevelSelectPage> {
             return;
         }
 
+        // Resolve LevelDataStorage from configured prefab (preferred) or by searching children.
+        let levelStorage: LevelDataStorage | null = null;
+        if (this.data.levelStoragePrefab) {
+            const prefab = this.data.levelStoragePrefab;
+            const comp = prefab.data ? (prefab.data.getComponent(LevelDataStorage) as LevelDataStorage | null) : null;
+            if (comp) {
+                levelStorage = comp;
+            } else {
+                console.warn("GameLevelSelectPage: configured levelStoragePrefab does not contain LevelDataStorage component.");
+            }
+        } else {
+            const found = this.node.getComponentInChildren(LevelDataStorage) as LevelDataStorage | null;
+            if (found) {
+                levelStorage = found;
+            } else {
+                console.warn("GameLevelSelectPage: LevelDataStorage not configured; level pair count unavailable for items.");
+            }
+        }
+
         // Cache items for fast lookups later (e.g., updating stars).
         this.gameLevelSelectItems = items;
 
@@ -125,8 +167,23 @@ export class GameLevelSelectPage extends Singleton<GameLevelSelectPage> {
             // Avoid double-subscribe by checking map
             if (this.itemUnsubscribes.has(item)) continue;
 
-            // Set level index according to the order in the list.
-            item.setLevelIndex(i);
+            // compute pair count and estimate saved star count from saved score
+            let starCount = 0;
+            if (levelStorage) {
+                const levelData = levelStorage.getLevel(i);
+                if (levelData && levelData.size) {
+                    const pairCount = Math.floor((levelData.size.x * levelData.size.y) / 2);
+                    const savedScore = UserScoreLoadSave.getScore(i);
+                    starCount = GameStats.estimateStarFromScore(pairCount, savedScore);
+                } else {
+                    console.warn(`GameLevelSelectPage: Level data missing for index ${i}; defaulting starCount to 0.`);
+                }
+            } else {
+                console.warn("GameLevelSelectPage: levelStoragePrefab not configured properly; defaulting starCount to 0 for all items.");
+            }
+
+            // Set level index according to the order in the list and provide precomputed star count
+            item.setInfo(i, starCount);
 
             const unsubscribe = item.onSelected.add((levelIndex: number) => {
                 this.onItemSelected(levelIndex, item);
@@ -190,8 +247,8 @@ export class GameLevelSelectPage extends Singleton<GameLevelSelectPage> {
     //------------------------------
     //--- Cleanup
     protected onDestroy(): void {
-        if (this.closeButton) {
-            this.closeButton.node.off(Button.EventType.CLICK, this.onCloseButtonClicked, this);
+        if (this.uiRef && this.uiRef.closeButton) {
+            this.uiRef.closeButton.node.off(Button.EventType.CLICK, this.onCloseButtonClicked, this);
         }
 
         // Unsubscribe all item listeners

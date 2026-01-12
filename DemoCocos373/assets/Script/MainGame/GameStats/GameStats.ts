@@ -91,4 +91,37 @@ export class GameStats {
         if (turns < twoStarThreshold) return 2;
         return 1;
     }
+
+    /**
+     * Estimate star rating from a saved numeric score for a level.
+     *
+     * Because a score does not preserve the number of turns, this function
+     * makes a best-effort (optimistic) conversion:
+     * - It computes the number of successful matches implied by `score`
+     *   using DEFAULT_MATCH_SUCCESS_SCORE.
+     * - If the implied matches are at least the required pair count, it
+     *   assumes minimal (best-case) turns equal to `pairCount` and returns
+     *   the star rating based on that assumption.
+     *
+     * @param pairCount - number of pairs in the level
+     * @param score - saved numeric score for the level
+     * @returns estimated star count (0..3); returns 0 if estimation is impossible or invalid inputs
+     */
+    public static estimateStarFromScore(pairCount: number, score: number): number {
+        const pairs = Math.max(0, Math.floor(pairCount));
+        if (pairs <= 0) return 0;
+
+        const impliedMatches = Math.max(0, Math.floor(score / this.DEFAULT_MATCH_SUCCESS_SCORE));
+
+        // If the saved score implies fewer matches than needed to finish the level,
+        // the save is invalid/unreliable for star conversion.
+        if (impliedMatches < pairs) {
+            console.warn(`GameStats: cannot estimate stars from score ${score} for pairCount ${pairCount} (implied matches ${impliedMatches}).`);
+            return 0;
+        }
+
+        // Optimistic assumption: player finished the level using minimal turns (one match per pair).
+        const estimatedTurns = pairs;
+        return this.calculateStarForScore(pairs, estimatedTurns);
+    }
 }

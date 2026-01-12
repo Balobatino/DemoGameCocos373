@@ -43,7 +43,7 @@
       }
     ],
     "_prefab": {
-      "__id__": 256
+      "__id__": 258
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -306,6 +306,8 @@
       "__id__": 0
     },
     "fileId": "7aeXI7WdJF440N74uIceM5",
+    "instance": null,
+    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -612,6 +614,8 @@
       "__id__": 0
     },
     "fileId": "f0Alw6mTBGaK6S/7MawyVX",
+    "instance": null,
+    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -3302,6 +3306,8 @@
       "__id__": 0
     },
     "fileId": "b90Kf478FN16Nm0rbJh5r9",
+    "instance": null,
+    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -3375,6 +3381,8 @@
       "__id__": 0
     },
     "fileId": "200JLrM9VBLZzzdjWGYJqF",
+    "instance": null,
+    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -3513,6 +3521,8 @@
       "__id__": 0
     },
     "fileId": "9fxmhuXuBHpYjYrwK+sBKi",
+    "instance": null,
+    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -4265,14 +4275,30 @@
     "__prefab": {
       "__id__": 255
     },
-    "closeButton": {
-      "__id__": 237
+    "data": {
+      "__id__": 256
+    },
+    "uiRef": {
+      "__id__": 257
     },
     "_id": ""
   },
   {
     "__type__": "cc.CompPrefabInfo",
     "fileId": "75JJKcdf9Pu4+g2s+O/tRn"
+  },
+  {
+    "__type__": "GameLevelSelectPageData",
+    "levelStoragePrefab": {
+      "__uuid__": "7a00c460-a692-4f71-9dea-517e47d279e8",
+      "__expectedType__": "cc.Prefab"
+    }
+  },
+  {
+    "__type__": "GameLevelSelectPageUIReference",
+    "closeButton": {
+      "__id__": 237
+    }
   },
   {
     "__type__": "cc.PrefabInfo",

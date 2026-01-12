@@ -1,6 +1,5 @@
 import { _decorator, Component, Button, Label, Node } from "cc";
 import { TypedEvent } from "../../../Utils/TypedEvent";
-import { UserScoreLoadSave } from "../../ScoreLoadSave/UserScoreLoadSave";
 const { ccclass, property } = _decorator;
 
 /**
@@ -54,7 +53,12 @@ export class GameLevelSelectItem extends Component {
      * Set the numeric index representing the level.
      * Also updates `levelLabel` text (shows 1-based number) when assigned.
      */
-    public setLevelIndex(index: number): void {
+    /**
+     * Set basic info for this level item.
+     * @param index - zero-based level index
+     * @param starAchieved - precomputed number of stars to display (0..3)
+     */
+    public setInfo(index: number, starAchieved: number): void {
         this.levelIndex = index;
 
         if (this.levelLabel) {
@@ -62,10 +66,13 @@ export class GameLevelSelectItem extends Component {
             this.levelLabel.string = String(index + 1);
         }
 
-        // Load saved star count for this level and update star nodes (if any).
-        let savedStarCount = UserScoreLoadSave.getScore(index);
-        let roundedNumStars = Math.floor(Number(savedStarCount));
-        this.updateStarDisplay(roundedNumStars);
+        // Update UI using the provided star count (no estimation performed here)
+        if (!Number.isFinite(starAchieved) || starAchieved < 0) {
+            console.warn(`GameLevelSelectItem: invalid starAchieved (${starAchieved}) for level ${index}; defaulting to 0.`);
+            starAchieved = 0;
+        }
+
+        this.updateStarDisplay(Math.floor(starAchieved));
     }
 
     /** Update the star display based on the given star count.
