@@ -231,6 +231,7 @@ export class GridCardItem extends Component {
      * Play flip animation that transitions from front-face to back-face (mirror of back->front).
      */
     public playFlipFrontToBackAnimation(onComplete?: () => void) {
+        if (!this.node) return;
         // Require all flip-related nodes to be present
         if (!this.uiRef.rootBackFace || !this.uiRef.rootFrontFace) {
             console.warn("GridCardItem: Missing flip nodes (rootBackFace, rootFrontFace, displayCardNode); cannot perform playFlipFrontToBackAnimation.");
@@ -241,12 +242,15 @@ export class GridCardItem extends Component {
         const halfDuration = this.flipAnimation.duration / 2;
         const linearEasing = EasingMap.get(EasingType.Linear);
 
-        // shrink front face, then enable back face and expand (non-null asserted after earlier guard)
-        const front = this.uiRef.rootFrontFace;
-        const back = this.uiRef.rootBackFace;
-        back.setScale(0, 1, 1);
+        // Ensure initial active states and scales (mirror of back->front)
+        const front = this.uiRef.rootFrontFace!;
+        const back = this.uiRef.rootBackFace!;
+        front.active = true;
+        back.active = false;
         front.setScale(1, 1, 1);
+        back.setScale(0, 1, 1);
 
+        // shrink front, then enable back and expand
         this.runScaleTween(front, halfDuration, new Vec3(0, 1, 1), linearEasing, () => {
             front.active = false;
             back.active = true;
