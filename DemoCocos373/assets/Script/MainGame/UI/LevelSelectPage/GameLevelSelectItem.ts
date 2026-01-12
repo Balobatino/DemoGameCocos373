@@ -3,6 +3,21 @@ import { TypedEvent } from "../../../Utils/TypedEvent";
 const { ccclass, property } = _decorator;
 
 /**
+ * Inspector group for UI references used by GameLevelSelectItem.
+ */
+@ccclass("GameLevelSelectItemUIReference")
+export class UIReference {
+    @property({ type: Button })
+    public selectButton: Button | null = null;
+
+    @property({ type: Label })
+    public levelLabel: Label | null = null;
+
+    @property({ type: [Node] })
+    public starOnList: Node[] = [];
+}
+
+/**
  * GameLevelSelectItem: Represents a selectable level item.
  * Exposes `onSelected` so consumers can react when this item is chosen.
  */
@@ -12,20 +27,14 @@ export class GameLevelSelectItem extends Component {
     // Exposed inspector properties
 
     /** Numeric index representing the level. Set in inspector or by code. */
-    @property
-    levelIndex = -1;
+    private levelIndex = -1;
 
-    /** Optional Button used to trigger selection. Assign in inspector for clickable UI. */
-    @property({ type: Button })
-    selectButton: Button | null = null;
-
-    /** Optional Label used to display the human-visible level number (shows index+1). */
-    @property({ type: Label })
-    levelLabel: Label | null = null;
-
-    /** List of star nodes to display achievement (activate first N nodes). */
-    @property({ type: [Node] })
-    starOnList: Node[] = [];
+    /**
+     * Grouped UI references for this item. Assign the button, label and star nodes
+     * in the inspector under this object for better organization.
+     */
+    @property({ type: UIReference })
+    public uiRef: UIReference = new UIReference();
 
     //------------------------------
     // Public events
@@ -61,9 +70,9 @@ export class GameLevelSelectItem extends Component {
     public setInfo(index: number, starAchieved: number): void {
         this.levelIndex = index;
 
-        if (this.levelLabel) {
+        if (this.uiRef.levelLabel) {
             // Display human-friendly 1-based level number
-            this.levelLabel.string = String(index + 1);
+            this.uiRef.levelLabel.string = String(index + 1);
         }
 
         // Update UI using the provided star count (no estimation performed here)
@@ -80,15 +89,15 @@ export class GameLevelSelectItem extends Component {
      */
     public updateStarDisplay(starCount: number): void {
         // Load saved star count for this level and update star nodes (if any).
-        if (this.starOnList && this.starOnList.length > 0) {
+        if (this.uiRef.starOnList && this.uiRef.starOnList.length > 0) {
             if (Number.isNaN(starCount) || starCount < 0) starCount = 0;
-            if (starCount > this.starOnList.length) {
-                console.warn(`GameLevelSelectItem: saved stars (${starCount}) exceed available star nodes (${this.starOnList.length}). Clamping.`);
-                starCount = this.starOnList.length;
+            if (starCount > this.uiRef.starOnList.length) {
+                console.warn(`GameLevelSelectItem: saved stars (${starCount}) exceed available star nodes (${this.uiRef.starOnList.length}). Clamping.`);
+                starCount = this.uiRef.starOnList.length;
             }
 
-            for (let i = 0; i < this.starOnList.length; i++) {
-                const node = this.starOnList[i];
+            for (let i = 0; i < this.uiRef.starOnList.length; i++) {
+                const node = this.uiRef.starOnList[i];
                 if (node) node.active = i < starCount;
             }
         }
@@ -98,18 +107,18 @@ export class GameLevelSelectItem extends Component {
     // Private
 
     private registerButtonClick(): void {
-        if (this.selectButton) {
-            this.selectButton.node.on(Button.EventType.CLICK, this.handleSelectClicked, this);
+        if (this.uiRef.selectButton) {
+            this.uiRef.selectButton.node.on(Button.EventType.CLICK, this.handleSelectClicked, this);
             return;
         }
 
         // If no Button assigned, warn so caller can attach a handler another way.
-        console.warn(`GameLevelSelectItem: 'selectButton' not assigned for node '${this.node.name}'.`);
+        console.warn(`GameLevelSelectItem: 'uiRef.selectButton' not assigned for node '${this.node.name}'.`);
     }
 
     private unregisterButtonClick(): void {
-        if (this.selectButton) {
-            this.selectButton.node.off(Button.EventType.CLICK, this.handleSelectClicked, this);
+        if (this.uiRef.selectButton) {
+            this.uiRef.selectButton.node.off(Button.EventType.CLICK, this.handleSelectClicked, this);
         }
     }
 

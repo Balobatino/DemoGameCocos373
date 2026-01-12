@@ -48,11 +48,11 @@
         "__id__": 88
       },
       {
-        "__id__": 90
+        "__id__": 91
       }
     ],
     "_prefab": {
-      "__id__": 92
+      "__id__": 93
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -681,8 +681,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 25,
-      "height": 25
+      "width": 28,
+      "height": 28
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -1158,8 +1158,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 25,
-      "height": 25
+      "width": 28,
+      "height": 28
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -1635,8 +1635,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 25,
-      "height": 25
+      "width": 28,
+      "height": 28
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -1949,6 +1949,17 @@
       "__id__": 89
     },
     "levelIndex": -1,
+    "uiRef": {
+      "__id__": 90
+    },
+    "_id": ""
+  },
+  {
+    "__type__": "cc.CompPrefabInfo",
+    "fileId": "39LSn1ZZRI7prOJWQG8skE"
+  },
+  {
+    "__type__": "GameLevelSelectItemUIReference",
     "selectButton": {
       "__id__": 86
     },
@@ -1965,12 +1976,7 @@
       {
         "__id__": 69
       }
-    ],
-    "_id": ""
-  },
-  {
-    "__type__": "cc.CompPrefabInfo",
-    "fileId": "39LSn1ZZRI7prOJWQG8skE"
+    ]
   },
   {
     "__type__": "9610dTzuXdJBpQvFa0dlUR4",
@@ -1981,7 +1987,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 91
+      "__id__": 92
     },
     "clickClip": {
       "__uuid__": "a204022f-cff1-4e29-ba00-73c15427a435",
