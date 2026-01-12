@@ -278,16 +278,20 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
 
         // Update scoring and UI (placeholders, implement when game data exists)
         this.updateScoreForSuccessMatching();
-        // TODO: update UI for success matching (update score, turns, matches)
 
         // reset selected refs , so it won't affect matching logic later when user click other cards during animation
         this._firstSelectedCard = null;
         this._secondSelectedCard = null;
 
+        // wait a litte more, since user need time to see the matched cards, let's say half of flip duration
+        const flipDuration = item1.flipAnimation.duration;
+        var toWait = flipDuration * 1.5;
+        await new Promise((res) => setTimeout(res, Math.floor(toWait * 1000)));
+
         // play scale down / disappear animation for matched cards
         item1.playPopDownAnimation();
         item2.playPopDownAnimation();
-        const duration = Math.max(item1.popDownAnimation?.duration ?? 0.15, item2.popDownAnimation?.duration ?? 0.15);
+        const duration = item1.popDownAnimation.duration;
         await new Promise((res) => setTimeout(res, Math.floor(duration * 1000)));
 
         // TODO: play SFX/VFX for matched cards disappear
@@ -306,6 +310,10 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
 
         // Update stats and UI (placeholders)
         this.updateStatsForFailedMatching();
+        // wait a little to let user see the two revealed cards before flipping back
+        const flipDuration = item1.flipAnimation.duration;
+        let toWait = flipDuration * 0.5;
+        await new Promise((res) => setTimeout(res, Math.floor(toWait * 1000)));
 
         // play flip back animations concurrently
         item1.playFlipFrontToBackAnimation();
@@ -316,8 +324,8 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
         this._secondSelectedCard = null;
 
         // wait for flip animation to finish before re-enable interaction
-        const flipDuration = item1.flipAnimation.duration;
-        await new Promise((res) => setTimeout(res, Math.floor(flipDuration * 1000)));
+        toWait = flipDuration;
+        await new Promise((res) => setTimeout(res, Math.floor(toWait * 1000)));
         item1.setActiveInteraction(true);
         item2.setActiveInteraction(true);
     }
