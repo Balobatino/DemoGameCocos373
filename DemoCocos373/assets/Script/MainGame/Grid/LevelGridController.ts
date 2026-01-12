@@ -283,44 +283,57 @@ export class LevelGridController extends Component {
         const countDownNode = label.node;
         const z = countDownNode.scale ? countDownNode.scale.z : 1;
 
-        // helper to animate the label scale and await completion
-        const runScale = (from: Vec3, to: Vec3, duration: number, easingType: EasingType) => {
-            countDownNode.setScale(from);
-            return new Promise<void>((resolve) => {
-                tween(countDownNode)
-                    .to(duration, { scale: to }, { easing: EasingMap.get(easingType) })
-                    .call(() => resolve())
-                    .start();
-            });
-        };
-
         // Ensure label is visible and start from hidden (scale 0)
         countDownNode.active = true;
 
         // 1) Intro message
         label.string = "Start";
-        await runScale(new Vec3(0, 0, z), new Vec3(1, 1, z), 0.5, EasingType.ElasticOut);
-        await new Promise((res) => setTimeout(res, 500));
+        this.runScaleForCountDownText(countDownNode, new Vec3(0, 0, z), new Vec3(1, 1, z), 0.5, EasingType.ElasticOut);
+        // Wait for the tween duration (0.5s) + the original extra pause (0.5s) => 1.0s
+        await new Promise((res) => setTimeout(res, 1000));
 
         // 2) Countdown 3,2,1
         for (let v = 3; v >= 1; v--) {
             label.string = `${v}`;
-            await runScale(new Vec3(0, 0, z), new Vec3(1, 1, z), 0.2, EasingType.BackOut);
-            await new Promise((res) => setTimeout(res, 600));
+            this.runScaleForCountDownText(countDownNode, new Vec3(0, 0, z), new Vec3(1, 1, z), 0.2, EasingType.BackOut);
+            // Wait for the tween duration (0.2s) + the original extra pause (0.6s) => 0.8s
+            await new Promise((res) => setTimeout(res, 800));
         }
 
         // 3) Go, then hide
         label.string = "Go";
-        await runScale(new Vec3(2, 2, z), new Vec3(1, 1, z), 0.2, EasingType.ElasticOut);
-        await new Promise((res) => setTimeout(res, 500));
-        await runScale(new Vec3(1, 1, z), new Vec3(0, 0, z), 0.2, EasingType.Linear);
+        this.runScaleForCountDownText(countDownNode, new Vec3(2, 2, z), new Vec3(1, 1, z), 0.2, EasingType.ElasticOut);
+        // Wait for the first tween (0.2s) + the original extra pause (0.5s) => 0.7s
+        await new Promise((res) => setTimeout(res, 700));
+        this.runScaleForCountDownText(countDownNode, new Vec3(1, 1, z), new Vec3(0, 0, z), 0.2, EasingType.Linear);
+        // Wait for the final tween to complete (0.2s) before flipping
+        await new Promise((res) => setTimeout(res, 200));
 
         // Trigger card flips and then hide the label shortly after
         this.playFlipAllCardsFrontToBack();
-        await new Promise((res) => setTimeout(res, 200));
+        await new Promise((res) => setTimeout(res, 300));
 
         // hide countdown label
         countDownNode.active = false;
+    }
+
+    /**
+     * Trigger a scale tween for the countdown text node. Non-awaitable helper: caller should
+     * wait explicitly if they need to wait for completion.
+     * @param node - node to animate (guarded via isValid)
+     * @param from - starting scale
+     * @param to - ending scale
+     * @param duration - duration in seconds
+     * @param easingType - easing type to lookup in EasingMap
+     */
+    private runScaleForCountDownText(node: Node, from: Vec3, to: Vec3, duration: number, easingType: EasingType): void {
+        // Guard: no-op if node is missing/invalid
+        if (!node || !isValid(node)) return;
+
+        node.setScale(from);
+        tween(node)
+            .to(duration, { scale: to }, { easing: EasingMap.get(easingType) })
+            .start();
     }
 
     /**
