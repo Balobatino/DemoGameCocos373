@@ -155,7 +155,8 @@ export class GameWinPage extends Singleton<GameWinPage> {
         } else {
             console.warn("GameLevelSelectPage: UIPage component not found; cannot call hide().");
         }
-
+        // reset stats for new game
+        GameStats.resetStatsForNewGame();
         // Reopen the main page for the same current level
         const playBoardPage = GamePlayBoardPage.getInstance<GamePlayBoardPage>();
         if (!playBoardPage) {
@@ -163,8 +164,6 @@ export class GameWinPage extends Singleton<GameWinPage> {
             return;
         }
         playBoardPage.showAndLoadLevelWhenFinishAnimation(GameStats.selectLevelIndex);
-        // reset stats for new game
-        GameStats.resetStatsForNewGame();
     }
 
     private onNextButtonClicked(): void {
@@ -179,6 +178,9 @@ export class GameWinPage extends Singleton<GameWinPage> {
         GameStats.selectLevelIndex++;
         UserScoreLoadSave.checkUnlockLevel(GameStats.selectLevelIndex);
 
+        // reset stats for new game
+        GameStats.resetStatsForNewGame();
+
         // Reopen the main page for next level index
         const playBoardPage = GamePlayBoardPage.getInstance<GamePlayBoardPage>();
         if (!playBoardPage) {
@@ -186,8 +188,6 @@ export class GameWinPage extends Singleton<GameWinPage> {
             return;
         }
         playBoardPage.showAndLoadLevelWhenFinishAnimation(GameStats.selectLevelIndex);
-        // reset stats for new game
-        GameStats.resetStatsForNewGame();
     }
 
     //------------------------------
