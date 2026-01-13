@@ -5,6 +5,7 @@ import { GameLevelSelectPage } from "./GameLevelSelectPage";
 import { GameStats } from "../GameStats/GameStats";
 import { GamePlayBoardPage } from "./GamePlayBoardPage";
 import { AudioManager } from "../../Standard/Audio/AudioManager";
+import { UserScoreLoadSave } from "../ScoreLoadSave/UserScoreLoadSave";
 const { ccclass, property } = _decorator;
 
 /**
@@ -174,9 +175,11 @@ export class GameWinPage extends Singleton<GameWinPage> {
         } else {
             console.warn("GameWinPage: UIPage component not found; cannot call hide().");
         }
+        // increase level also check unlock it
+        GameStats.selectLevelIndex++;
+        UserScoreLoadSave.checkUnlockLevel(GameStats.selectLevelIndex);
 
         // Reopen the main page for next level index
-        GameStats.selectLevelIndex++;
         const playBoardPage = GamePlayBoardPage.getInstance<GamePlayBoardPage>();
         if (!playBoardPage) {
             console.warn("GamePlayBoardPage singleton instance not found in Main scene.");
@@ -288,8 +291,8 @@ export class GameWinPage extends Singleton<GameWinPage> {
             await this.sleep(1500);
         }
 
-        // wait 500ms before showing buttons
-        await this.sleep(500);
+        // wait 300ms before showing buttons
+        await this.sleep(300);
 
         // Pop-in replay button
         if (this.uiRef.replayButton) {
@@ -300,7 +303,7 @@ export class GameWinPage extends Singleton<GameWinPage> {
             tween(replayButton)
                 .to(0.3, { scale: new Vec3(1, 1, 1) }, { easing: easing.backOut })
                 .start();
-            await this.sleep(300);
+            await this.sleep(150);
         }
 
         // Pop-in home button
@@ -312,7 +315,7 @@ export class GameWinPage extends Singleton<GameWinPage> {
             tween(homeButton)
                 .to(0.3, { scale: new Vec3(1, 1, 1) }, { easing: easing.backOut })
                 .start();
-            await this.sleep(300);
+            await this.sleep(150);
         }
 
         // Pop-in next button
@@ -324,7 +327,7 @@ export class GameWinPage extends Singleton<GameWinPage> {
             tween(nextButton)
                 .to(0.3, { scale: new Vec3(1, 1, 1) }, { easing: easing.backOut })
                 .start();
-            await this.sleep(300);
+            await this.sleep(150);
         }
 
         // Re-enable interactions on the page and buttons
