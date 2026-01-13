@@ -15,6 +15,9 @@ export class UIReference {
 
     @property({ type: [Node] })
     public starOnList: Node[] = [];
+
+    @property({ type: Node })
+    public lockedIcon: Node | null = null;
 }
 
 /**
@@ -27,7 +30,7 @@ export class GameLevelSelectItem extends Component {
     // Exposed inspector properties
 
     /** Numeric index representing the level. Set in inspector or by code. */
-    private levelIndex = -1;
+    public levelIndex = -1;
 
     /**
      * Grouped UI references for this item. Assign the button, label and star nodes
@@ -100,6 +103,21 @@ export class GameLevelSelectItem extends Component {
                 const node = this.uiRef.starOnList[i];
                 if (node) node.active = i < starCount;
             }
+        }
+    }
+
+    /**
+     * Set or clear the locked visual state for this item.
+     * When locked, the `lockedIcon` node is enabled and the `selectButton` is disabled.
+     * @param isLocked - true to lock (disable interaction), false to unlock
+     */
+    public setActiveLock(isLocked: boolean): void {
+        if (this.uiRef.lockedIcon) {
+            this.uiRef.lockedIcon.active = isLocked;
+        }
+
+        if (this.uiRef.selectButton) {
+            this.uiRef.selectButton.interactable = !isLocked;
         }
     }
 

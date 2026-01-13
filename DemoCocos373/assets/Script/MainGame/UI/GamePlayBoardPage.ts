@@ -385,6 +385,8 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
 
         // 2) Persist the player's score and turn count for this level
         UserScoreLoadSave.saveScore(GameStats.selectLevelIndex, GameStats.matchingScore, GameStats.turnCount);
+        // Also ensure the next level is unlocked in storage so the UI can reflect unlocked state
+        UserScoreLoadSave.checkUnlockLevel(GameStats.selectLevelIndex + 1);
 
         // 3) Hide the gameplay page immediately
         const uiPage = this.getUiPage();

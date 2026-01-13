@@ -374,6 +374,8 @@ export class GameWinPage extends Singleton<GameWinPage> {
             return;
         }
         levelSelectPage.updateStarDisplayForLevel(levelIndex, starCount);
+        // After updating stars for the completed level, ensure the next level's unlock state is checked/applied
+        levelSelectPage.checkUnlockStateForLevel(levelIndex + 1);
     }
 
     //------------------------------

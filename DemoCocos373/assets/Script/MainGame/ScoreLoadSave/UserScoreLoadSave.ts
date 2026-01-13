@@ -40,6 +40,7 @@ export class UserScoreLoadSave {
 
     /**
      * Get saved score and turn count for a specific level. If not found, initialize to 0.
+     * If levelIndex = 0, then we set turnCount to 1 to unlock the first level.
      * @param levelIndex - level index
      * @returns object with { score, turnCount }
      */
@@ -69,15 +70,37 @@ export class UserScoreLoadSave {
             const tv = parseInt(existingTurnStr, 10);
             if (Number.isNaN(tv)) {
                 console.warn(`UserScoreLoadSave: corrupted value for key ${turnKey}, resetting to 0`);
-                sys.localStorage.setItem(turnKey, "0");
+                // Unlock the first level by default
+                if (levelIndex === 0 && turnCount === 0) {
+                    turnCount = 1;
+                }
+                sys.localStorage.setItem(turnKey, String(turnCount));
             } else {
                 turnCount = tv;
             }
         } else {
-            sys.localStorage.setItem(turnKey, "0");
+            // Unlock the first level by default
+            if (levelIndex === 0 && turnCount === 0) {
+                turnCount = 1;
+            }
+            sys.localStorage.setItem(turnKey, String(turnCount));
         }
 
         return { score, turnCount };
+    }
+
+    /**
+     * Ensure a level is unlocked in persistent storage. If `turnCount` is 0 for the level,
+     * this method sets its turn count to 1 so it becomes selectable.
+     * @param levelIndex - index of the level to ensure unlocked
+     */
+    public static checkUnlockLevel(levelIndex: number): void {
+        const data = this.getScoreData(levelIndex);
+        if (data.turnCount === 0) {
+            const turnKey = this.getTurnKey(levelIndex);
+            sys.localStorage.setItem(turnKey, "1");
+            //console.log(`UserScoreLoadSave: unlocked level ${levelIndex} (set turnCount = 1)`);
+        }
     }
 
     // ----------------------------------------

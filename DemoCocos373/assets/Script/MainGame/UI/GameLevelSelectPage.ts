@@ -55,6 +55,8 @@ export class GameLevelSelectPage extends Singleton<GameLevelSelectPage> {
     protected doOnLoad(): void {
         this.cacheComponents();
         this.registerButtonHandlers();
+        // check unlock first level before loading items
+        UserScoreLoadSave.checkUnlockLevel(0);
         this.loadAndRegisterItemListeners();
     }
 
@@ -169,12 +171,15 @@ export class GameLevelSelectPage extends Singleton<GameLevelSelectPage> {
 
             // compute pair count and estimate saved star count from saved score
             let starCount = 0;
+            let turnCount = 0;
             if (levelStorage) {
                 const levelData = levelStorage.getLevel(i);
                 if (levelData && levelData.size) {
                     const pairCount = Math.floor((levelData.size.x * levelData.size.y) / 2);
-                    const saved = UserScoreLoadSave.getScoreData(i);
-                    starCount = GameStats.calculateStarFromSavedScoreAndTurns(pairCount, saved.score, saved.turnCount);
+                    const savedScoreAndTurn = UserScoreLoadSave.getScoreData(i);
+                    turnCount = savedScoreAndTurn.turnCount;
+
+                    starCount = GameStats.calculateStarFromSavedScoreAndTurns(pairCount, savedScoreAndTurn.score, savedScoreAndTurn.turnCount);
                 } else {
                     console.warn(`GameLevelSelectPage: Level data missing for index ${i}; defaulting starCount to 0.`);
                 }
@@ -184,6 +189,10 @@ export class GameLevelSelectPage extends Singleton<GameLevelSelectPage> {
 
             // Set level index according to the order in the list and provide precomputed star count
             item.setInfo(i, starCount);
+            // Lock the item if turnCount === 0 (locked state)
+            // log
+            console.log(`GameLevelSelectPage: setting lock state for level ${i} to ${turnCount === 0}`);
+            item.setActiveLock(turnCount === 0);
 
             const unsubscribe = item.onSelected.add((levelIndex: number) => {
                 this.onItemSelected(levelIndex, item);
@@ -242,6 +251,35 @@ export class GameLevelSelectPage extends Singleton<GameLevelSelectPage> {
         }
 
         item.updateStarDisplay(starCount);
+    }
+
+    /**
+     * Check and apply unlock state for a level. This will call into storage helper to
+     * ensure the level is unlocked (if conditions met) and then update the item's lock UI.
+     * @param levelIndex - index of the level to check/unlock
+     */
+    public checkUnlockStateForLevel(levelIndex: number): void {
+        if (!Number.isInteger(levelIndex) || levelIndex < 0) {
+            console.warn(`GameLevelSelectPage: invalid levelIndex ${levelIndex} passed to checkUnlockStateForLevel.`);
+            return;
+        }
+        // if levelIndex > max level index, just return
+        if (this.gameLevelSelectItems && levelIndex >= this.gameLevelSelectItems.length) {
+            return;
+        }
+
+        // Ask storage helper to mark the level unlocked if appropriate
+        UserScoreLoadSave.checkUnlockLevel(levelIndex);
+        // Now update the item's lock state based on saved turn count
+        const item = this.gameLevelSelectItems.find((it) => it.levelIndex === levelIndex);
+        if (!item) {
+            console.warn(`GameLevelSelectPage: no GameLevelSelectItem found with levelIndex ${levelIndex} to apply unlock state.`);
+            return;
+        }
+
+        const scoreData = UserScoreLoadSave.getScoreData(levelIndex);
+        // If turnCount is 0 then it remains locked; otherwise unlock the item
+        item.setActiveLock(scoreData.turnCount === 0);
     }
 
     //------------------------------
