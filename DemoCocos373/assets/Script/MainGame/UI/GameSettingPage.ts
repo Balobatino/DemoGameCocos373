@@ -1,4 +1,4 @@
-import { _decorator, Button, Component, Node, Toggle } from "cc";
+import { _decorator, Button, Component, Node, Toggle, sys } from "cc";
 import { Singleton } from "../../Standard/Singleton";
 import { UIPage } from "../../Standard/UIPage/UIPage";
 import { GameMainPage } from "./GameMainPage";
@@ -118,13 +118,30 @@ export class GameSettingPage extends Singleton<GameSettingPage> {
 
     /**
      * Handler for the Policy button click event.
-     * Currently logs a message; actual policy display logic to be implemented.
+     * Use sys.openURL on native/mobile (works on iOS). Fallback to window.open for web preview.
      */
     private onPolicyButtonClicked(): void {
-        // console.log("Policy button clicked. Opening policy...");
-        // open web link : https://doc-hosting.flycricket.io/funny-memory-card-matching-game-privacy-policy/645b03e8-8258-4d27-88ad-054ace69d2da/privacy
         const policyUrl = "https://doc-hosting.flycricket.io/funny-memory-card-matching-game-privacy-policy/645b03e8-8258-4d27-88ad-054ace69d2da/privacy";
-        window.open(policyUrl, "_blank");
+        // Attempt to open the policy URL using platform-specific APIs
+        try {
+            // default use sys.openURL if available
+            if (sys && typeof sys.openURL === "function") {
+                sys.openURL(policyUrl);
+                return;
+            }
+            // fallback to window.open for web
+            if (typeof window !== "undefined" && typeof window.open === "function") {
+                window.open(policyUrl, "_blank");
+                return;
+            }
+            console.warn(`GameSettingPage: No available API to open URL: ${policyUrl}`);
+        } catch (e) {
+            console.error("GameSettingPage: Failed to open policy URL:", e);
+            // best-effort fallback to window.open
+            if (typeof window !== "undefined" && typeof window.open === "function") {
+                window.open(policyUrl, "_blank");
+            }
+        }
     }
 
     // Initialize toggle states from AudioManager once the node is enabled and start runs
