@@ -190,8 +190,6 @@ export class GameLevelSelectPage extends Singleton<GameLevelSelectPage> {
             // Set level index according to the order in the list and provide precomputed star count
             item.setInfo(i, starCount);
             // Lock the item if turnCount === 0 (locked state)
-            // log
-            console.log(`GameLevelSelectPage: setting lock state for level ${i} to ${turnCount === 0}`);
             item.setActiveLock(turnCount === 0);
 
             const unsubscribe = item.onSelected.add((levelIndex: number) => {
