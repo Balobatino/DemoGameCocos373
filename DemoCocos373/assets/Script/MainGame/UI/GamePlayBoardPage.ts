@@ -274,7 +274,7 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
         // play match success audio
         const audioMgr = AudioManager.getInstance<AudioManager>();
         if (this.audio?.matchSuccess) audioMgr.playOnShot(this.audio.matchSuccess);
-        console.log("GamePlayBoardPage: Matching success");
+        // console.log("GamePlayBoardPage: Matching success");
 
         // Update scoring and UI (placeholders, implement when game data exists)
         this.updateScoreForSuccessMatching();
@@ -306,7 +306,7 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
         // play match fail audio
         const audioMgr = AudioManager.getInstance<AudioManager>();
         if (this.audio?.matchFailed) audioMgr.playOnShot(this.audio.matchFailed);
-        console.log("GamePlayBoardPage: Matching fail");
+        // console.log("GamePlayBoardPage: Matching fail");
 
         // Update stats and UI (placeholders)
         this.updateStatsForFailedMatching();
@@ -373,7 +373,7 @@ export class GamePlayBoardPage extends Singleton<GamePlayBoardPage> {
     }
 
     private async playLevelClearRoutine(): Promise<void> {
-        console.log("GamePlayBoardPage.onLevelCleared(): level cleared - handling win flow.");
+        // console.log("GamePlayBoardPage.onLevelCleared(): level cleared - handling win flow.");
 
         // 1) destroy all cards , no need animation
         const grid = this.uiRef.levelGridController;
