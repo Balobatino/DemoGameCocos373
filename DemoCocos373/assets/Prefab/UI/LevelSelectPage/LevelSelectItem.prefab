@@ -222,10 +222,10 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "ab40e967-c35d-461f-b6ee-439bbad5857b@f9941",
+      "__uuid__": "46bd6f6b-4d58-426b-867f-55067c4d122d@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
-    "_type": 0,
+    "_type": 1,
     "_fillType": 0,
     "_sizeMode": 0,
     "_fillCenter": {
@@ -584,7 +584,7 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "e5fc9e84-4fd0-408f-9ba1-128e08792b7c@f9941",
+      "__uuid__": "0aa9f4c6-be58-4dd0-ae04-29f4744acf87@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 0,
@@ -615,8 +615,6 @@
       "__id__": 0
     },
     "fileId": "ecee+nf4JJqoEAmg9Ov2tm",
-    "instance": null,
-    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -757,7 +755,7 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "6e1a4b64-148e-41a7-877d-d123814f16cb@f9941",
+      "__uuid__": "a2aaa3fb-e362-48eb-92eb-f94788393b1c@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 0,
@@ -788,8 +786,6 @@
       "__id__": 0
     },
     "fileId": "36wD7CP29CZ4u0W3HZPyjY",
-    "instance": null,
-    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -863,8 +859,6 @@
       "__id__": 0
     },
     "fileId": "71jSIXQ5ZM4ZTuap54AR4w",
-    "instance": null,
-    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -1061,7 +1055,7 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "e5fc9e84-4fd0-408f-9ba1-128e08792b7c@f9941",
+      "__uuid__": "0aa9f4c6-be58-4dd0-ae04-29f4744acf87@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 0,
@@ -1092,8 +1086,6 @@
       "__id__": 0
     },
     "fileId": "a3Tt5SJ81I75NPq4bAHG0U",
-    "instance": null,
-    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -1234,7 +1226,7 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "6e1a4b64-148e-41a7-877d-d123814f16cb@f9941",
+      "__uuid__": "a2aaa3fb-e362-48eb-92eb-f94788393b1c@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 0,
@@ -1265,8 +1257,6 @@
       "__id__": 0
     },
     "fileId": "a7vov0fB5Daoqx7fldH++K",
-    "instance": null,
-    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -1340,8 +1330,6 @@
       "__id__": 0
     },
     "fileId": "5f+UfbZrdNqo6vmYvGo0ee",
-    "instance": null,
-    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -1538,7 +1526,7 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "e5fc9e84-4fd0-408f-9ba1-128e08792b7c@f9941",
+      "__uuid__": "0aa9f4c6-be58-4dd0-ae04-29f4744acf87@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 0,
@@ -1569,8 +1557,6 @@
       "__id__": 0
     },
     "fileId": "45w4nqwSpDD5i1ZfMvNdC9",
-    "instance": null,
-    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -1711,7 +1697,7 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "6e1a4b64-148e-41a7-877d-d123814f16cb@f9941",
+      "__uuid__": "a2aaa3fb-e362-48eb-92eb-f94788393b1c@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 0,
@@ -1742,8 +1728,6 @@
       "__id__": 0
     },
     "fileId": "16PpoDrvpIYZuOsSZJflVs",
-    "instance": null,
-    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -1817,8 +1801,6 @@
       "__id__": 0
     },
     "fileId": "c9RSfyQrVDKq8N7hN0IsQh",
-    "instance": null,
-    "targetOverrides": null,
     "nestedPrefabInstanceRoots": null
   },
   {
@@ -2132,10 +2114,10 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "77a88707-363b-4d33-a1c9-4303a654d39d@f9941",
+      "__uuid__": "c8c03c44-3b6f-4af1-890c-19a523b0d093@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
-    "_type": 0,
+    "_type": 1,
     "_fillType": 0,
     "_sizeMode": 0,
     "_fillCenter": {
@@ -2359,6 +2341,7 @@
       "__id__": 0
     },
     "fileId": "c4cb770qhEnKqW3NI8k59R",
-    "instance": null
+    "instance": null,
+    "targetOverrides": null
   }
 ]
