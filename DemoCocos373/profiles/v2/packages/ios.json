@@ -18,11 +18,12 @@
           "inBundle": false
         }
       ],
-      "startScene": "8aa11742-3bc1-43c1-8bca-f14089d3d54c"
+      "startScene": "8aa11742-3bc1-43c1-8bca-f14089d3d54c",
+      "name": "FlipClickMatchup"
     },
     "options": {
       "ios": {
-        "packageName": "com.balobatino.demo373.matchingcard123",
+        "packageName": "com.kamal.balobatino.demo373.matchingcard123",
         "renderBackEnd": {
           "metal": true
         },
@@ -39,7 +40,7 @@
         },
         "targetVersion": "12.0",
         "__version__": "1.0.0",
-        "developerTeam": "53CQHPC455_7C739CA2E8F1B9633A7A9D5073DCB35CFB23296B"
+        "developerTeam": "2GSPY5WFU5_795E4380B5AF2C755C86E1B1BD99832ABCE99544"
       }
     },
     "taskOptionsMap": {
@@ -82,6 +83,26 @@
         "targetVersion": "12.0",
         "__version__": "1.0.0",
         "developerTeam": "53CQHPC455_7C739CA2E8F1B9633A7A9D5073DCB35CFB23296B"
+      },
+      "1768215871251": {
+        "packageName": "com.kamal.balobatino.demo373.matchingcard123",
+        "renderBackEnd": {
+          "metal": true
+        },
+        "skipUpdateXcodeProject": false,
+        "orientation": {
+          "portrait": true,
+          "upsideDown": false,
+          "landscapeRight": false,
+          "landscapeLeft": false
+        },
+        "osTarget": {
+          "iphoneos": true,
+          "simulator": false
+        },
+        "targetVersion": "12.0",
+        "__version__": "1.0.0",
+        "developerTeam": "2GSPY5WFU5_795E4380B5AF2C755C86E1B1BD99832ABCE99544"
       }
     },
     "__version__": "1.3.5"

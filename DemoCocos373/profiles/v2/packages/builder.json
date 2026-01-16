@@ -20,19 +20,20 @@
     "outputName": "ios",
     "mainBundleCompressionType": "merge_dep",
     "platform": "ios",
-    "startScene": "8aa11742-3bc1-43c1-8bca-f14089d3d54c"
+    "startScene": "8aa11742-3bc1-43c1-8bca-f14089d3d54c",
+    "name": "FlipClickMatchup"
   },
   "BuildTaskManager": {
     "taskMap": {
-      "1767684220048": {
+      "1768215871251": {
         "type": "build",
-        "id": "1767684220048",
+        "id": "1768215871251",
         "progress": 1,
         "state": "success",
         "stage": "build",
-        "message": "1-9-2026 17:58:39 build success in 8959 ms!",
+        "message": "1-15-2026 13:29:18 build success in 21603 ms!",
         "options": {
-          "name": "DemoCocos373",
+          "name": "FlipClickMatchup",
           "platform": "ios",
           "buildPath": "project://build",
           "debug": false,
@@ -66,7 +67,7 @@
           "packages": {},
           "__version__": "1.3.5"
         },
-        "time": "1-9-2026 17:58",
+        "time": "1-15-2026 13:28",
         "dirty": false
       }
     }
